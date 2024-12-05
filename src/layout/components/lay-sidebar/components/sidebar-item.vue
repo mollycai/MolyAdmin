@@ -9,7 +9,7 @@
         <IconifyIconOnline :icon="item.meta && toRaw(item.meta.icon)" />
       </div>
       <!-- 没加此判断，light主题选中菜单的字体颜色一直不是白色 -->
-      <el-text truncated class="!w-full !text-inherit">
+      <el-text truncated :class="['!w-full', theme !== 'light' ? '!text-inherit' : '']">
         {{ item.meta.title }}
       </el-text>
     </el-menu-item>
@@ -19,7 +19,7 @@
       <div v-if="toRaw(item.meta.icon)" class="sub-menu-icon">
         <IconifyIconOnline :icon="item.meta && toRaw(item.meta.icon)" />
       </div>
-      <el-text truncated class="!w-full !text-inherit">
+      <el-text truncated :class="['!w-full', theme !== 'light' ? '!text-inherit' : '']">
         {{ item.meta.title }}
       </el-text>
     </template>
@@ -47,6 +47,7 @@ const attrs = useAttrs();
 
 const { getConfig } = useGlobalConfig();
 const currentLayout = computed(() => getConfig().Layout);
+const theme = computed(() => getConfig().Theme);
 
 defineProps({
   item: {

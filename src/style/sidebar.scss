@@ -211,6 +211,14 @@
       }
     }
 
+    .el-menu-item {
+      &:not(.is-disabled) {
+        &:hover {
+          background-color: transparent !important;
+        }
+      }
+    }
+
     & > .el-sub-menu .el-sub-menu__icon-arrow {
       position: static !important;
       margin-top: 0;
