@@ -1,5 +1,5 @@
 <template>
-  <div :class="['app-wrapper', theme]">
+  <div ref="appWrapperRef" :class="['app-wrapper', classes]">
     <!-- 主题布局 -->
     <component :is="currentLayout" />
     <!-- 系统设置 -->
@@ -10,20 +10,62 @@
     </el-backtop>
   </div>
 </template>
+
 <script lang="ts" setup>
 import laySetting from './components/lay-setting/index.vue';
 import switchLayoutList from '@/layout/switch/index';
 import BackTopIcon from '@/assets/svg/back_top.svg?component';
 
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useGlobalConfig } from '@/config';
 import { cloneDeep } from 'lodash-es';
+import { useResizeObserver } from '@vueuse/core';
+import { useAppStoreHook } from '@/store/modules/app';
+import { deviceType } from './hooks/useDevice';
+import { useNav } from './hooks/useNav';
+
 const { getConfig } = useGlobalConfig();
 
-const theme = computed(() => getConfig().Theme ?? 'default');
-const layout = computed(() => getConfig().Layout ?? 'vertical');
 const layoutList = cloneDeep(switchLayoutList);
+const layout = computed(() => getConfig().Layout ?? 'vertical');
 const currentLayout = computed(() => layoutList.find((item) => item.name === layout.value));
+
+const { device, molyApp } = useNav();
+const classes = computed(() => {
+  return {
+    hideSidebar: !molyApp.getSidebarStatus,
+    openSidebar: molyApp.getSidebarStatus,
+    mobile: device.value === 'mobile',
+  };
+});
+
+const appWrapperRef = ref();
+
+function toggle(device: deviceType, bool: boolean) {
+  useAppStoreHook().toggleDevice(device);
+  useAppStoreHook().toggleSideBar(bool, 'resize');
+}
+// 响应式布局
+useResizeObserver(appWrapperRef, (entries) => {
+  const entry = entries[0];
+  const { width, height } = entry.contentRect;
+  useAppStoreHook().setViewportSize({ width, height });
+
+  /** width app-wrapper类容器宽度
+   * 0 < width <= 760 隐藏侧边栏
+   * 760 < width <= 990 折叠侧边栏
+   * width > 990 展开侧边栏
+   */
+  if (width > 0 && width <= 760) {
+    toggle('mobile', false);
+  } else if (width > 760 && width <= 990) {
+    toggle('desktop', false);
+  } else if (width > 990 && !useAppStoreHook().getSidebarIsClickCollapse) {
+    toggle('desktop', true);
+  } else {
+    toggle('desktop', false);
+  }
+});
 </script>
 
 <style lang="scss" scoped>
@@ -36,6 +78,11 @@ const currentLayout = computed(() => layoutList.find((item) => item.name === lay
     display: table;
     clear: both;
     content: '';
+  }
+
+  &.mobile.openSidebar {
+    position: fixed;
+    top: 0;
   }
 }
 </style>

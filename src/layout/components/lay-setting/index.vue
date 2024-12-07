@@ -20,7 +20,7 @@
           v-show="showThemeColors(item.themeColor)"
           :key="index"
           :style="getThemeColorStyle(item.color)"
-          @click="setLayoutThemeColor(item.themeColor)"
+          @click="setLayoutThemeColor(item.themeColor as themeColorValue)"
         >
           <el-icon style="margin: 0.1em 0.1em 0 0" :size="17" :color="getThemeColor(item.themeColor)">
             <IconifyIconOffline :icon="Check" />
@@ -34,7 +34,12 @@
           <div />
           <div />
         </li>
-        <li ref="horizontalRef" :class="Layout === 'horizontal' ? 'is-select' : ''" @click="setLayout('horizontal')">
+        <li
+          ref="horizontalRef"
+          v-if="device !== 'mobile'"
+          :class="Layout === 'horizontal' ? 'is-select' : ''"
+          @click="setLayout('horizontal')"
+        >
           <div />
           <div />
         </li>
@@ -105,6 +110,7 @@ import { useThemeChange } from '@/layout/hooks/useThemeChange';
 import { useGlobalConfig } from '@/config';
 import { useMultiTagsStoreHook } from '@/store/modules/multiTag';
 import { useTranslationLang } from '@/layout/hooks/useTranslationLang';
+import { useNav } from '@/layout/hooks/useNav';
 
 import Check from '@iconify-icons/ep/check';
 import LightIcon from '@iconify-icons/ep/sunny';
@@ -117,6 +123,7 @@ const pClass = computed(() => {
 const { themeColors, setLayoutThemeColor, setModeColor, toggleClass } = useThemeChange();
 const { getConfig, setConfig } = useGlobalConfig();
 const { t } = useTranslationLang();
+const { device } = useNav();
 
 const theme = computed(() => getConfig().Theme);
 

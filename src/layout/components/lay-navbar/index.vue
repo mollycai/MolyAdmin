@@ -1,7 +1,14 @@
 <template>
   <div class="navbar bg-[#fff]">
+    <!-- 顶部折叠 -->
+    <sidebar-collapse-top
+      v-if="device === 'mobile'"
+      class="top-collapse-container"
+      :is-active="molyApp.sidebar.opened"
+      @toggleClick="toggleSideBar"
+    />
     <!-- 面包屑 -->
-    <breadCrumb class="breadcrumb-container" />
+    <breadCrumb v-if="device !== 'mobile'" class="breadcrumb-container" />
     <div class="vertical-header-right">
       <!-- 搜索 -->
       <search id="search" />
@@ -35,6 +42,7 @@
 </template>
 
 <script lang="ts" setup>
+import sidebarCollapseTop from '../lay-sidebar/components/sidebar-collapse-top.vue';
 import breadCrumb from './components/bread-crumb.vue';
 import search from '../lay-search/index.vue';
 import notice from '../lay-notice/index.vue';
@@ -48,7 +56,7 @@ import { useTranslationLang } from '@/layout/hooks/useTranslationLang';
 import { useNav } from '@/layout/hooks/useNav';
 
 const { t } = useTranslationLang();
-const { username, userAvatar, avatarsStyle, logout, onPanel } = useNav();
+const { molyApp, username, userAvatar, avatarsStyle, device, toggleSideBar, logout, onPanel } = useNav();
 </script>
 
 <style lang="scss">
@@ -57,6 +65,13 @@ const { username, userAvatar, avatarsStyle, logout, onPanel } = useNav();
   height: 48px;
   overflow: hidden;
   border-bottom: var(--moly-border-color) 1px solid;
+
+  .top-collapse-container {
+    float: left;
+    height: 100%;
+    line-height: 48px;
+    cursor: pointer;
+  }
 
   .vertical-header-right {
     display: flex;
