@@ -1,20 +1,15 @@
 <template>
-  <el-container class="h-screen">
-    <el-aside :width="isSidebarOpened ? '210px' : '56px'">
-      <!-- 侧边菜单 -->
-      <lay-sidebar />
-    </el-aside>
-    <el-container>
-      <el-header :style="[hideTabs ? 'height: 48px' : 'height: 80px', 'padding: 0px']">
-        <!-- 头部导航栏 -->
-        <lay-navbar />
-        <!-- 页面标签 -->
-        <lay-tags v-if="!hideTabs" />
-      </el-header>
-      <el-main class="app-main main-container">
-        <lay-content></lay-content>
-      </el-main>
-    </el-container>
+  <div v-show="device === 'mobile' && isSidebarOpened" class="app-mask" @click="useAppStoreHook().toggleSideBar()" />
+  <!-- 侧边菜单 -->
+  <lay-sidebar />
+  <el-container class="main-container">
+    <el-header :style="[hideTabs ? 'height: 48px' : 'height: 80px', 'padding: 0px']">
+      <!-- 头部导航栏 -->
+      <lay-navbar />
+      <!-- 页面标签 -->
+      <lay-tags v-if="!hideTabs" />
+    </el-header>
+    <lay-content></lay-content>
   </el-container>
 </template>
 
@@ -26,6 +21,7 @@ import layTags from '../components/lay-tag/index.vue';
 
 import { computed } from 'vue';
 import { useGlobalConfig } from '@/config';
+import { useNav } from '../hooks/useNav';
 import { useAppStoreHook } from '@/store/modules/app';
 
 export default {
@@ -39,13 +35,29 @@ export default {
   },
   setup() {
     const { getConfig } = useGlobalConfig();
+    const { device, molyApp } = useNav();
+
     const hideTabs = computed(() => getConfig().HideTabs);
-    const molyApp = useAppStoreHook();
     const isSidebarOpened = computed(() => molyApp.getSidebarStatus);
+
     return {
+      device,
       hideTabs,
       isSidebarOpened,
+      useAppStoreHook,
     };
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.app-mask {
+  position: absolute;
+  top: 0;
+  z-index: 2001;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  opacity: 0.3;
+}
+</style>

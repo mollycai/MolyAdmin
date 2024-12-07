@@ -1,4 +1,5 @@
 import { remainingPaths } from '@/router';
+import { useAppStoreHook } from '@/store/modules/app';
 import { usePermissionStoreHook } from '@/store/modules/permission';
 import { emitter } from '@/utils/mitt';
 import { storeToRefs } from 'pinia';
@@ -6,15 +7,21 @@ import { computed, ref } from 'vue';
 
 // @TODO 封装所有与导航相关的hook
 export function useNav() {
+  const molyApp = useAppStoreHook();
+
   // 完整菜单
   const { wholeMenus } = storeToRefs(usePermissionStoreHook());
   // 用户名
   const username = ref('admin');
   // 用户头像
   const userAvatar = ref('https://avatars.githubusercontent.com/u/99068236?v=4');
-
+  // 头像样式
   const avatarsStyle = computed(() => {
     return username.value ? { marginRight: '10px' } : '';
+  });
+  // 设备
+  const device = computed(() => {
+    return molyApp.getDevice;
   });
 
   /** 菜单点击事件 */
@@ -28,6 +35,15 @@ export function useNav() {
     return remainingPaths.includes(path);
   }
 
+  /** 触发侧边栏是否显示 */
+  function toggleSideBar() {
+    molyApp.toggleSideBar();
+  }
+
+  const isCollapse = computed(() => {
+    return !molyApp.getSidebarStatus;
+  });
+
   /** 退出登录 */
   function logout() {
     // @TODO 退出登录
@@ -39,9 +55,13 @@ export function useNav() {
   }
 
   return {
+    molyApp,
     username,
     userAvatar,
     avatarsStyle,
+    device,
+    isCollapse,
+    toggleSideBar,
     menuSelect,
     logout,
     onPanel,

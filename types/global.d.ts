@@ -6,7 +6,7 @@ declare global {
     Layout?: string;
     Locale?: string;
     MultiTagsCache?: boolean;
-    Theme?: string;
+    Theme?: themeColorValue;
     Grey?: boolean;
     DarkMode?: boolean;
     EpThemeColor?: string;
@@ -15,6 +15,16 @@ declare global {
     HideFooter?: boolean;
     StorageNameSpace?: string;
   }
+
+  type themeColorValue =
+    | 'light'
+    | 'default'
+    | 'volcano'
+    | 'saucePurple'
+    | 'darkPink'
+    | 'dusk'
+    | 'mingQing'
+    | 'auroraGreen';
 }
 
 export {};

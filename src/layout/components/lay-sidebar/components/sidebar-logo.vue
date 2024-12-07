@@ -1,5 +1,5 @@
 <template>
-  <div v-if="showLogo" class="sidebar-logo-container" :class="{ collapses: collapse }">
+  <div class="sidebar-logo-container" :class="{ collapses: collapse }">
     <transition name="sidebarLogoFade">
       <router-link v-if="collapse" key="collapse" :title="title" class="sidebar-logo-link" to="/">
         <img :src="getLogo()" alt="logo" />
@@ -19,7 +19,6 @@ import { useGlobalConfig } from '@/config';
 const { getConfig } = useGlobalConfig();
 
 const title = computed(() => getConfig().Title);
-const showLogo = computed(() => getConfig().ShowLogo);
 
 defineProps({
   collapse: Boolean,

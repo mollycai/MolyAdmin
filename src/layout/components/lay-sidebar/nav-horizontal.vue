@@ -19,14 +19,14 @@
       <!-- admin -->
       <el-dropdown trigger="click">
         <span class="el-dropdown-link navbar-bg-hover">
-          <img :src="'https://avatars.githubusercontent.com/u/99068236?v=4'" :style="avatarsStyle" />
+          <img :src="userAvatar" :style="avatarsStyle" />
           <p v-if="username" class="dark:text-white">{{ username }}</p>
         </span>
         <template #dropdown>
           <el-dropdown-menu class="logout">
             <el-dropdown-item @click="logout">
               <IconifyIconOffline :icon="LogoutCircleRLine" style="margin: 5px" />
-              退出系统
+              {{ t('buttons.loginOut') }}
             </el-dropdown-item>
           </el-dropdown-menu>
         </template>
@@ -51,7 +51,8 @@ import { useGlobalConfig } from '@/config';
 import { computed, ref, onMounted, watch } from 'vue';
 import { isEmpty } from 'lodash-es';
 import { useRoute } from 'vue-router';
-import { emitter } from '@/utils/mitt';
+import { useNav } from '@/layout/hooks/useNav';
+import { useTranslationLang } from '@/layout/hooks/useTranslationLang';
 
 import Setting from '@iconify-icons/ri/settings-3-line';
 import LogoutCircleRLine from '@iconify-icons/ri/logout-circle-r-line';
@@ -64,25 +65,12 @@ function getLogo() {
 }
 
 const title = computed(() => getConfig().Title);
-
 const menuData = computed(() => usePermissionStoreHook().wholeMenus);
 
+const { t } = useTranslationLang();
+const { username, userAvatar, avatarsStyle, logout, onPanel } = useNav();
 const route = useRoute();
 const activeIndex = ref<string>('/');
-
-function onPanel() {
-  emitter.emit('openPanel');
-}
-
-function logout() {
-  // @TODO 退出登录
-}
-
-// @TODO
-const username = ref('admin');
-const avatarsStyle = computed(() => {
-  return username.value ? { marginRight: '10px' } : '';
-});
 
 onMounted(() => {
   activeIndex.value = !isEmpty(route.meta?.activePath) ? route.meta.activePath : route.path;

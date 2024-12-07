@@ -9,7 +9,7 @@
         <IconifyIconOnline :icon="item.meta && toRaw(item.meta.icon)" />
       </div>
       <!-- 没加此判断，light主题选中菜单的字体颜色一直不是白色 -->
-      <el-text truncated class="!w-full !text-inherit">
+      <el-text truncated :class="['!w-full', theme !== 'light' ? '!text-inherit' : '']">
         {{ item.meta.title }}
       </el-text>
     </el-menu-item>
@@ -19,7 +19,7 @@
       <div v-if="toRaw(item.meta.icon)" class="sub-menu-icon">
         <IconifyIconOnline :icon="item.meta && toRaw(item.meta.icon)" />
       </div>
-      <el-text truncated class="!w-full !text-inherit">
+      <el-text truncated :class="['!w-full', theme !== 'light' ? '!text-inherit' : '']">
         {{ item.meta.title }}
       </el-text>
     </template>
@@ -41,12 +41,14 @@ import { PropType, ref, useAttrs, computed, CSSProperties } from 'vue';
 import { menuType } from '@/layout/types';
 import { toRaw } from 'vue';
 import { useGlobalConfig } from '@/config';
-import { useAppStoreHook } from '@/store/modules/app';
+import { useNav } from '@/layout/hooks/useNav';
 
 const attrs = useAttrs();
 
 const { getConfig } = useGlobalConfig();
+const { isCollapse } = useNav();
 const currentLayout = computed(() => getConfig().Layout);
+const theme = computed(() => getConfig().Theme);
 
 defineProps({
   item: {
@@ -89,15 +91,12 @@ function hasOneShowingChild(children: menuType[] = [], parent: menuType) {
   return false;
 }
 
-const molyApp = useAppStoreHook();
-const isCollapse = computed(() => molyApp.getSidebarStatus);
-
 const getSubMenuIconStyle = computed((): CSSProperties => {
   return {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    margin: currentLayout.value === 'horizontal' ? '0 5px 0 0' : !isCollapse.value ? '0 auto' : '0 5px 0 0',
+    margin: currentLayout.value === 'horizontal' ? '0 5px 0 0' : isCollapse.value ? '0 auto' : '0 5px 0 0',
   };
 });
 </script>

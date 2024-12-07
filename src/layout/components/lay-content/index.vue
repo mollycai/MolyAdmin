@@ -21,9 +21,7 @@
             <component :is="Component" :key="route" />
           </div>
         </Transition>
-        <el-footer v-if="!hideFooter" height="30px">
-          <lay-footer />
-        </el-footer>
+        <lay-footer v-if="!hideFooter" />
       </el-scrollbar>
     </template>
   </router-view>

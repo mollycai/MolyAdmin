@@ -36,7 +36,7 @@ const themeColors = {
     menuActiveBefore: '#693ac9',
   },
   /* 深粉色 */
-  pink: {
+  darkPink: {
     subMenuActiveText: '#fff',
     menuBg: '#28081a',
     menuHover: 'rgb(216 68 147 / 15%)',
@@ -97,9 +97,8 @@ const themeColors = {
   },
 };
 
-// 'light' | 'default' | 'volcano' | 'saucePurple' | 'pink' | 'dusk' | 'mingQing' | 'auroraGreen'
 // 设置 CSS 变量
-export const setThemeVariables = (theme) => {
+export const setThemeVariables = (theme: themeColorValue) => {
   const colors = themeColors[theme];
 
   Object.keys(colors).forEach((key) => {
