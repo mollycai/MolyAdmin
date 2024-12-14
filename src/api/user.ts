@@ -36,15 +36,15 @@ export type RefreshTokenResult = {
 
 /** 登录 */
 export const getLogin = (data?: object) => {
-  return http.request<UserResult>('post', '/login', { data });
+  return http.request<UserResult>('post', '/api/login', { data });
 };
 
 /** 获取验证码 */
 export const getCaptchaIamge = () => {
-  return http.request('get', '/captchaIamge');
+  return http.request('get', '/api/captchaIamge');
 };
 
 /** 刷新`token` */
 export const refreshTokenApi = (data?: object) => {
-  return http.request<RefreshTokenResult>("post", "/refresh-token", { data });
+  return http.request<RefreshTokenResult>('post', '/api/refresh-token', { data });
 };

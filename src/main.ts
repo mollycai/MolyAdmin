@@ -6,7 +6,6 @@ import { createApp } from 'vue';
 import { useI18n } from '@/plugins/i18n';
 import { useElementPlus } from './plugins/element-plus';
 import { getPlatformConfig, useGlobalConfig } from '@/config';
-import { useRefresh } from './hooks/useRefresh';
 import { MotionPlugin } from '@vueuse/motion';
 
 // 引入重置样式
@@ -30,12 +29,8 @@ getPlatformConfig().then(async (config) => {
   app.use(store);
   app.use(router);
   await router.isReady();
-  const { initConfig } = useGlobalConfig();
-  const { refresh } = useRefresh();
   // 初始化配置
-  initConfig(config.StorageNameSpace, config);
-  // 刷新执行的逻辑
-  refresh();
+  useGlobalConfig().initConfig(config.StorageNameSpace, config);
   app.use(MotionPlugin);
   app.use(useElementPlus);
   app.use(useI18n);

@@ -22,6 +22,11 @@ export const usePermissionStore = defineStore({
       this.wholeMenus = filterNoPermissionTree(filterTree(ascending(this.constantMenus.concat(routes))));
       this.flatteningRoutes = formatFlatteningRoutes(this.constantMenus.concat(routes));
     },
+    /** 清除所有页面缓存 */
+    cleanAllPageCache() {
+      this.wholeMenus = [];
+      this.cachePageList = [];
+    },
   },
 });
 

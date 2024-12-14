@@ -23,9 +23,9 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
       port: +VITE_PORT,
       host: '0.0.0.0',
       proxy: {
-        '/api': {
+        '^/api/.*': {
           // 这里填写后端地址
-          target: 'http://localhost:8000/',
+          target: 'http://127.0.0.1:3000',
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, ''),
         },

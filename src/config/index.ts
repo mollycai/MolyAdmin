@@ -1,4 +1,4 @@
-/** @TODO 获取平台的配置，目前先选几个实现 */
+/** @TODO 获取平台的配置，目前先选几个实现，此处的配置仍然存在问题，需要设计更好的响应式localStorage */
 import axios from 'axios';
 import { createGlobalState, useStorage } from '@vueuse/core';
 import { isEmpty } from 'lodash-es';

@@ -1,9 +1,13 @@
 import { defineStore } from 'pinia';
 import { userType } from '../types';
 import { localCache } from '@/utils/cache';
-import { DataInfo, userKey } from '@/utils/auth';
+import { DataInfo, setToken, userKey } from '@/utils/auth';
 import { UserResult, getLogin } from '@/api/user';
 import { store } from '..';
+import { routerArrays } from '@/layout/types';
+import { resetRouter, router } from '@/router';
+import { useMultiTagsStoreHook } from './multiTag';
+import { removeToken } from '@/utils/auth';
 
 export const useUserStore = defineStore({
   id: 'user',
@@ -52,12 +56,12 @@ export const useUserStore = defineStore({
     SET_LOGINDAY(value: number) {
       this.loginDay = Number(value);
     },
-    /** 登入 */
+    /** 登录 */
     async loginByUsername(data) {
       return new Promise<UserResult>((resolve, reject) => {
         getLogin(data)
           .then((data) => {
-            // if (data?.success) setToken(data.data);
+            if (data?.success) setToken(data.data);
             resolve(data);
           })
           .catch((error) => {
@@ -65,6 +69,17 @@ export const useUserStore = defineStore({
           });
       });
     },
+    /** 退出登录 */
+    logOut() {
+      this.username = '';
+      this.roles = [];
+      this.permissions = [];
+      removeToken();
+      useMultiTagsStoreHook().handleTags('equal', [...routerArrays]);
+      resetRouter();
+      router.push('/login');
+    },
+    /** 刷新`token` */
   },
 });
 

@@ -9,7 +9,8 @@
     "openText": "open",
     "closeText": "close",
     "clickCollapse": "Collapse",
-    "clickExpand": "Expand"
+    "clickExpand": "Expand",
+    "hint": "Hint"
   },
   "panel": {
     "systemSet": "System Set",

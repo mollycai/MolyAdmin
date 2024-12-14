@@ -9,7 +9,8 @@
     "openText": "开",
     "closeText": "关",
     "clickCollapse": "点击折叠",
-    "clickExpand": "点击展开"
+    "clickExpand": "点击展开",
+    "hint": "提示"
   },
   "panel": {
     "systemSet": "系统配置",

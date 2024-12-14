@@ -110,15 +110,20 @@ import { useI18n } from 'vue-i18n';
 import { useNav } from '@/layout/hooks/useNav';
 import { useThemeChange } from '@/layout/hooks/useThemeChange';
 import { useTranslationLang } from '@/layout/hooks/useTranslationLang';
+import { useUserStoreHook } from '@/store/modules/user';
+import { useRouter } from 'vue-router';
+import { initRouter } from '@/router';
 import { Lock, User } from '@element-plus/icons-vue';
 
 import Motion from './utils/motion';
+import feedback from '@/utils/feedback';
 
 import dayIcon from '@/assets/svg/day.svg?component';
 import darkIcon from '@/assets/svg/dark.svg?component';
 import globalization from '@/assets/svg/globalization.svg?component';
 import Check from '@iconify-icons/ep/check';
 
+const router = useRouter();
 const { t } = useI18n();
 const { title, getDropdownItemStyle, getDropdownItemClass } = useNav();
 const { isDark, setModeColor } = useThemeChange();
@@ -131,7 +136,30 @@ const ruleForm = reactive({
   password: '123qwe',
 });
 
-const onLogin = async (formEl: FormInstance | undefined) => {};
+const onLogin = async (formEl: FormInstance | undefined) => {
+  if (!formEl) return;
+  await formEl.validate((valid) => {
+    if (valid) {
+      loading.value = true;
+      useUserStoreHook()
+        .loginByUsername({ username: ruleForm.username, password: ruleForm.password })
+        .then((res) => {
+          if (res.success) {
+            // 获取后端路由
+            return initRouter().then(() => {
+              // @TODO topmenu暂时为welcome
+              router.push('/welcome').then(() => {
+                feedback.msgSuccess(t('login.loginSuccess'));
+              });
+            });
+          } else {
+            feedback.msgError(t('login.loginFail'));
+          }
+        })
+        .finally(() => (loading.value = false));
+    }
+  });
+};
 </script>
 
 <style scoped>

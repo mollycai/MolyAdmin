@@ -19,6 +19,7 @@
     "@vueuse/motion": "^2.2.3",
     "axios": "1.7.2",
     "element-plus": "^2.7.5",
+    "js-cookie": "^3.0.5",
     "lodash-es": "4.17.21",
     "mitt": "^3.0.1",
     "nprogress": "^0.2.0",

@@ -1,13 +1,16 @@
-import { RouteComponent, RouteRecordRaw, createRouter, createWebHistory } from 'vue-router';
-// 动态路由
-import { getAsyncRoutes } from '@/api/routes';
+import { RouteComponent, RouteRecordRaw, Router, createRouter, createWebHistory } from 'vue-router';
+import { getAsyncRoutes } from '@/api/routes'; // 动态路由
 import { localCache } from '@/utils/cache';
 import { usePermissionStoreHook } from '@/store/modules/permission';
+import { useRefresh } from '@/hooks/useRefresh';
 import { cloneDeep } from 'lodash-es';
-import { ascending, formatAsyncRoute } from './utils';
+import { ascending, findRouteByPath, formatAsyncRoute } from './utils';
 import { isURL } from '@/utils/utils';
+import { DataInfo, multipleTabsKey, userKey } from '@/utils/auth';
 import NProgress from '@/utils/progress';
 import remainingRouter from './modules/remaining';
+import Cookies from 'js-cookie';
+import { useMultiTagsStoreHook } from '@/store/modules/multiTag';
 
 // 自动导入全部静态路由
 const modules: Record<string, any> = import.meta.glob(['./modules/**/*.ts'], {
@@ -48,7 +51,7 @@ function handleAsyncRoutes(routeList: any[]) {
 }
 
 /** 初始化路由 */
-function initRouter() {
+export function initRouter() {
   // @TODO 判断是否缓存动态路由，此处默认缓存
   const key = 'async-routes';
   const asyncRouteList = localCache.get(key) as any;
@@ -69,16 +72,23 @@ function initRouter() {
   }
 }
 
-const router = createRouter({
+/** 创建路由实例 */
+export const router = createRouter({
   history: createWebHistory(),
   routes: routes,
 });
+
+/** 重置路由 */
+export function resetRouter() {
+  // @TODO
+}
 
 const whiteList = ['/login'];
 
 router.beforeEach((to: ToRouteType, _from, next) => {
   // @TODO 路由缓存处理机制
-  // @TODO 获取用户信息
+  // 获取用户信息
+  const userInfo = localCache.get<DataInfo<number>>(userKey);
   NProgress.start();
   // 处理浏览器页面标题
   const externalLink = isURL(to?.name as string);
@@ -88,9 +98,17 @@ router.beforeEach((to: ToRouteType, _from, next) => {
       document.title = item.meta.title as string;
     });
   }
-  // @TODO 判断是否有权限，下列默认为有权限的操作，无权限需自动重定向到403
-  // @TODO 判断是否是超链接，是的话用特定的打开方式
-  // @TODO 刷新时对多标签页的处理
+  // @TODO 刷新（考虑是否还有其他更好的策略）
+  useRefresh().refresh();
+  // 判断是否有权限，下列默认为有权限的操作，无权限需自动重定向到403
+  if (Cookies.get(multipleTabsKey) && userInfo) {
+    // @TODO 无权限跳转403页面
+    // @TODO 判断是否是超链接，是的话用特定的打开方式
+    // @TODO 刷新时对多标签页的处理
+    if (usePermissionStoreHook().wholeMenus.length === 0 && to.path !== '/login') {
+      initRouter();
+    }
+  }
 
   next();
 });
@@ -99,6 +117,6 @@ router.afterEach(() => {
   NProgress.done();
 });
 // @TODO 在等录后调用
-initRouter();
+// initRouter();
 
 export default router;
