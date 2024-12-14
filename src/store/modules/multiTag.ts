@@ -5,13 +5,14 @@ import { usePermissionStoreHook } from './permission';
 import { multiType, positionType } from '../types';
 import { isURL } from '@/utils/utils';
 import { isBoolean } from 'lodash-es';
+import { store } from '..';
 
 const { getConfig, globalNameSpace } = useGlobalConfig();
 
-export const useMultiTagsStoreHook = defineStore({
+export const useMultiTagsStore = defineStore({
   id: 'multiTags',
   state: () => ({
-    // 储存标签页
+    // 储存标签页 @TODO 有Bug，当开启标签持久化，再关闭，标签仍然缓存
     multiTags: getConfig()?.MultiTagsCache
       ? localCache.get(globalNameSpace + '_TAGS')
       : [
@@ -85,3 +86,7 @@ export const useMultiTagsStoreHook = defineStore({
     },
   },
 });
+
+export function useMultiTagsStoreHook() {
+  return useMultiTagsStore(store);
+}

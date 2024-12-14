@@ -33,5 +33,15 @@
     "noMessage": "No Message",
     "noNotify": "No Notify",
     "noTodo": "No Todo"
+  },
+  "login": {
+    "username": "Username",
+    "password": "Password",
+    "login": "Login",
+    "loginSuccess": "Login Success",
+    "loginFail": "Login Fail",
+    "usernameReg": "Please enter username",
+    "passWordReg": "Please enter password",
+    "passWordRuleReg": "The password format should be any combination of 8-18 digits"
   }
 }

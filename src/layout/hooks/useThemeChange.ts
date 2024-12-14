@@ -1,5 +1,5 @@
 /** 操作主题的Hook */
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import { darken, lighten } from '@/utils/color';
 import { themeColorsType } from '../types';
 import { useGlobalConfig } from '@/config';
@@ -37,7 +37,7 @@ export function useThemeChange() {
   };
 
   // 是否开启暗黑模式
-  const isDark = computed(() => getConfig().DarkMode);
+  const isDark = ref<boolean>(getConfig().DarkMode);
 
   const setPropertyPrimary = (mode: string, i: number, color: string) => {
     document.documentElement.style.setProperty(

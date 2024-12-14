@@ -7,6 +7,7 @@ import { useI18n } from '@/plugins/i18n';
 import { useElementPlus } from './plugins/element-plus';
 import { getPlatformConfig, useGlobalConfig } from '@/config';
 import { useRefresh } from './hooks/useRefresh';
+import { MotionPlugin } from '@vueuse/motion';
 
 // 引入重置样式
 import './style/reset.scss';
@@ -35,6 +36,7 @@ getPlatformConfig().then(async (config) => {
   initConfig(config.StorageNameSpace, config);
   // 刷新执行的逻辑
   refresh();
+  app.use(MotionPlugin);
   app.use(useElementPlus);
   app.use(useI18n);
   app.mount('#app');

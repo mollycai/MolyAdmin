@@ -4,8 +4,6 @@ import zhLocale from 'element-plus/es/locale/lang/zh-cn';
 import { App } from 'vue';
 import { I18n, createI18n } from 'vue-i18n';
 
-const modules = async () => import.meta.glob('../locales/*.json', { eager: true });
-console.log(await modules());
 const siphonI18n = (function () {
   // 仅初始化一次国际化配置
   let cache = Object.fromEntries(

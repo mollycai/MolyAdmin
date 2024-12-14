@@ -4,10 +4,12 @@ import { usePermissionStoreHook } from '@/store/modules/permission';
 import { emitter } from '@/utils/mitt';
 import { storeToRefs } from 'pinia';
 import { computed, ref } from 'vue';
+import { useGlobalConfig } from '@/config';
 
 // @TODO 封装所有与导航相关的hook
 export function useNav() {
   const molyApp = useAppStoreHook();
+  const { getConfig } = useGlobalConfig();
 
   // 完整菜单
   const { wholeMenus } = storeToRefs(usePermissionStoreHook());
@@ -22,6 +24,26 @@ export function useNav() {
   // 设备
   const device = computed(() => {
     return molyApp.getDevice;
+  });
+  // 标题
+  const title = computed(() => {
+    return getConfig().Title;
+  });
+
+  /** 设置国际化选中后的样式 */
+  const getDropdownItemStyle = computed(() => {
+    return (locale, t) => {
+      return {
+        background: locale === t ? getConfig().EpThemeColor : '',
+        color: locale === t ? '#f4f4f5' : '#000',
+      };
+    };
+  });
+
+  const getDropdownItemClass = computed(() => {
+    return (locale, t) => {
+      return locale === t ? '' : 'dark:hover:!text-primary';
+    };
   });
 
   /** 菜单点击事件 */
@@ -60,6 +82,9 @@ export function useNav() {
     userAvatar,
     avatarsStyle,
     device,
+    title,
+    getDropdownItemStyle,
+    getDropdownItemClass,
     isCollapse,
     toggleSideBar,
     menuSelect,
