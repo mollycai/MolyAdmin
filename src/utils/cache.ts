@@ -1,4 +1,5 @@
 import { cacheType } from '@/enums/cacheEnums';
+import { isEmpty } from 'lodash-es';
 
 const prefixKey = 'MOLY_ADMIN_';
 
@@ -50,7 +51,7 @@ export class WebStroage {
   }
 
   set<T>(key: string, value: T): void {
-    if (value !== null || undefined) {
+    if (!isEmpty(value)) {
       this.storage.setItem(key, JSON.stringify(value));
     }
   }
