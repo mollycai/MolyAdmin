@@ -12,11 +12,11 @@ export class WebStroage {
     this.storage = type === cacheType.LOCAL ? localStorage : sessionStorage;
   }
 
-  private getKey(key: string) {
+  private getKey(key: string): string {
     return `${prefixKey}${key}`.toUpperCase();
   }
 
-  getKeyWithExpire(key: string) {
+  getKeyWithExpire<T>(key: string): T {
     key = this.getKey(key);
     const data = this.storage.getItem(key);
     if (!data) {
@@ -30,7 +30,7 @@ export class WebStroage {
     return value;
   }
 
-  setKeyWithExpire(key: string, value: any, expire?: string) {
+  setKeyWithExpire<T>(key: string, value: T, expire?: string): void {
     key = this.getKey(key);
     // 设置缓存（expire是缓存时效）
     let data: any = {
@@ -41,7 +41,7 @@ export class WebStroage {
     this.storage.setItem(key, data);
   }
 
-  get(key: string) {
+  get<T>(key: string): T {
     // 设置缓存时间好像暂时没必要，这又会与useStorage的功能有点冲突
     const value = this.storage.getItem(key);
     if (value) {
@@ -49,21 +49,21 @@ export class WebStroage {
     }
   }
 
-  set(key: string, value: any) {
+  set<T>(key: string, value: T): void {
     if (value !== null || undefined) {
       this.storage.setItem(key, JSON.stringify(value));
     }
   }
 
-  remove(key: string) {
+  remove(key: string): void {
     this.storage.removeItem(key);
   }
 
-  clear() {
+  clear(): void {
     this.storage.clear();
   }
 
-  time() {
+  time(): number {
     return Math.round(new Date().getTime() / 1000);
   }
 }

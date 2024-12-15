@@ -9,7 +9,8 @@
     "openText": "开",
     "closeText": "关",
     "clickCollapse": "点击折叠",
-    "clickExpand": "点击展开"
+    "clickExpand": "点击展开",
+    "hint": "提示"
   },
   "panel": {
     "systemSet": "系统配置",
@@ -33,5 +34,15 @@
     "noMessage": "暂无消息",
     "noNotify": "暂无通知",
     "noTodo": "暂无待办"
+  },
+  "login": {
+    "username": "账号",
+    "password": "密码",
+    "login": "登录",
+    "loginSuccess": "登录成功",
+    "loginFail": "登录失败",
+    "usernameReg": "请输入账号",
+    "passWordReg": "请输入密码",
+    "passWordRuleReg": "密码格式应为8-18位数字、字母、符号的任意两种组合"
   }
 }

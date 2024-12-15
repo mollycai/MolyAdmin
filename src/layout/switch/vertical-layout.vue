@@ -9,7 +9,9 @@
       <!-- 页面标签 -->
       <lay-tags v-if="!hideTabs" />
     </el-header>
-    <lay-content></lay-content>
+    <el-main class="app-main">
+      <lay-content></lay-content>
+    </el-main>
   </el-container>
 </template>
 
