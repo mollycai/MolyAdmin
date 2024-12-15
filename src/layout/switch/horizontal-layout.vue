@@ -6,7 +6,7 @@
       <!-- 页面标签 -->
       <lay-tags v-if="!hideTabs" />
     </el-header>
-    <el-main class="app-main main-container">
+    <el-main class="app-main">
       <lay-content></lay-content>
     </el-main>
   </el-container>
