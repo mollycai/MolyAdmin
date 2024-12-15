@@ -4,7 +4,7 @@
   "KeepAlive": true,
   "Layout": "vertical",
   "Locale": "zh",
-  "MultiTagsCache":true,
+  "MultiTagsCache":false,
   "Theme": "default",
   "Grey": false,
   "DarkMode": false,

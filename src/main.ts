@@ -28,9 +28,9 @@ app.component('IconifyIconOnline', IconifyIconOnline);
 getPlatformConfig().then(async (config) => {
   app.use(store);
   app.use(router);
-  await router.isReady();
   // 初始化配置
   useGlobalConfig().initConfig(nameSpace, config);
+  await router.isReady();
   app.use(MotionPlugin);
   app.use(useElementPlus);
   app.use(useI18n);

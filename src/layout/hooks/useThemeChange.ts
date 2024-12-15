@@ -37,7 +37,7 @@ export function useThemeChange() {
   };
 
   // 是否开启暗黑模式
-  const isDark = computed(() => getConfig().DarkMode);
+  const isDark = ref<boolean>(getConfig().DarkMode);
 
   const setPropertyPrimary = (mode: string, i: number, color: string) => {
     document.documentElement.style.setProperty(
