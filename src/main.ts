@@ -1,12 +1,12 @@
 import App from './App.vue';
 import router from './router';
 import { store } from './store';
-
 import { createApp } from 'vue';
 import { useI18n } from '@/plugins/i18n';
 import { useElementPlus } from './plugins/element-plus';
 import { getPlatformConfig, useGlobalConfig } from '@/config';
 import { MotionPlugin } from '@vueuse/motion';
+import { nameSpace } from '@/config/constants';
 
 // 引入重置样式
 import './style/reset.scss';
@@ -30,7 +30,7 @@ getPlatformConfig().then(async (config) => {
   app.use(router);
   await router.isReady();
   // 初始化配置
-  useGlobalConfig().initConfig(config.StorageNameSpace, config);
+  useGlobalConfig().initConfig(nameSpace, config);
   app.use(MotionPlugin);
   app.use(useElementPlus);
   app.use(useI18n);

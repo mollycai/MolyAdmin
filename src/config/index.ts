@@ -3,9 +3,9 @@ import axios from 'axios';
 import { createGlobalState, useStorage } from '@vueuse/core';
 import { isEmpty } from 'lodash-es';
 import { localCache } from '@/utils/cache';
+import { nameSpace } from './constants';
 
 const { VITE_PUBLIC_PATH } = import.meta.env;
-let nameSpace: string = '';
 
 /** 获取项目动态全局配置 */
 export const getPlatformConfig = async (): Promise<any> => {
@@ -16,7 +16,6 @@ export const getPlatformConfig = async (): Promise<any> => {
     .then(({ data: config }) => {
       // 不采用挂载在app.config.globalProperties上这种方法，因为在ts文件中无法获取
       // 所以采用vueuse的createGlobalState创建全局变量
-      nameSpace = config.StorageNameSpace;
       return config;
     })
     .catch(() => {
@@ -27,8 +26,7 @@ export const getPlatformConfig = async (): Promise<any> => {
 /** 操作全局配置的方法 */
 export const useGlobalConfig = createGlobalState(() => {
   // 放在createGlobalState下的全局变量
-  const globalNameSpace = nameSpace;
-  const globalConfig = useStorage<PlatformConfigs>(globalNameSpace, {});
+  const globalConfig = useStorage<PlatformConfigs>(nameSpace, {});
 
   /** 初始化全局配置 */
   const initConfig = (storageNameSpace: string, config: PlatformConfigs) => {
@@ -52,7 +50,6 @@ export const useGlobalConfig = createGlobalState(() => {
   };
 
   return {
-    globalNameSpace,
     getConfig,
     setConfig,
     initConfig,

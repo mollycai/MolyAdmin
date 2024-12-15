@@ -4,12 +4,13 @@
 import { useThemeChange } from '@/layout/hooks/useThemeChange';
 import { useGlobalConfig } from '@/config';
 import { localCache } from '@/utils/cache';
+import { nameSpace } from '@/config/constants';
 
 export function useRefresh() {
   const { setEpThemeColor, setModeColor, toggleClass } = useThemeChange();
-  const { getConfig, globalNameSpace } = useGlobalConfig();
+  const { getConfig } = useGlobalConfig();
 
-  const currentConfig: PlatformConfigs = localCache.get(globalNameSpace) || getConfig();
+  const currentConfig: PlatformConfigs = localCache.get(nameSpace) || getConfig();
 
   const refresh = () => {
     // 设置主题颜色

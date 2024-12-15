@@ -7,14 +7,15 @@ import { isURL } from '@/utils/utils';
 import { isBoolean } from 'lodash-es';
 import { store } from '..';
 
-const { getConfig, globalNameSpace } = useGlobalConfig();
+const { getConfig } = useGlobalConfig();
+const tagNameSpace = 'responsive-tags';
 
 export const useMultiTagsStore = defineStore({
   id: 'multiTags',
   state: () => ({
     // 储存标签页 @TODO 有Bug，当开启标签持久化，再关闭，标签仍然缓存
     multiTags: getConfig()?.MultiTagsCache
-      ? localCache.get(globalNameSpace + '_TAGS')
+      ? localCache.get(tagNameSpace)
       : [
           {
             path: '/welcome',
@@ -37,13 +38,13 @@ export const useMultiTagsStore = defineStore({
     multiTagsCacheChange(multiTagsCache: boolean) {
       this.multiTagsCache = multiTagsCache;
       if (multiTagsCache) {
-        localCache.set(globalNameSpace + '_TAGS', this.multiTags);
+        localCache.set(tagNameSpace, this.multiTags);
       } else {
-        localCache.remove(globalNameSpace + '_TAGS');
+        localCache.remove(tagNameSpace);
       }
     },
     tagsCache(multiTags) {
-      this.multiTagsCache && localCache.set(globalNameSpace + '_TAGS', multiTags);
+      this.multiTagsCache && localCache.set(tagNameSpace, multiTags);
     },
     handleTags<T>(mode: string, value?: T | multiType, position?: positionType): T {
       switch (mode) {
