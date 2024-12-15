@@ -2015,7 +2015,7 @@ dargs@^7.0.0:
   resolved "https://registry.npmmirror.com/dargs/-/dargs-7.0.0.tgz#04015c41de0bcb69ec84050f3d9be0caf8d6d5cc"
   integrity sha512-2iy1EkLdlBzQGvbweYRFxmFath8+K7+AKB0TlhHWkNuH+TmovaMH/Wp7V7R4u7f4SnX3OgLsU9t1NI9ioDnUpg==
 
-dayjs@^1.11.3:
+dayjs@^1.11.13:
   version "1.11.13"
   resolved "https://registry.npmmirror.com/dayjs/-/dayjs-1.11.13.tgz#92430b0139055c3ebb60150aa13e860a4b5a366c"
   integrity sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==
@@ -2162,10 +2162,10 @@ electron-to-chromium@^1.5.41:
   resolved "https://registry.npmmirror.com/electron-to-chromium/-/electron-to-chromium-1.5.45.tgz#fa592ce6a88b44d23acbc7453a2feab98996e6c9"
   integrity sha512-vOzZS6uZwhhbkZbcRyiy99Wg+pYFV5hk+5YaECvx0+Z31NR3Tt5zS6dze2OepT6PCTzVzT0dIJItti+uAW5zmw==
 
-element-plus@^2.7.5:
-  version "2.8.6"
-  resolved "https://registry.npmmirror.com/element-plus/-/element-plus-2.8.6.tgz#af4b106610caa550444a2b318a20792f0e1af8c5"
-  integrity sha512-fk5jB8V3efM02/4roZ5SWOLArgaYXbxEydZLlXSr+KPAwjNyHBlk2+HO5em8YKo5+RLBoHnn6BaThj6IE4nXoQ==
+element-plus@^2.8.0:
+  version "2.9.1"
+  resolved "https://registry.npmmirror.com/element-plus/-/element-plus-2.9.1.tgz#00cac40abaafe8806fc77b2552050e14a7693680"
+  integrity sha512-9Agqf/jt4Ugk7EZ6C5LME71sgkvauPCsnvJN12Xid2XVobjufxMGpRE4L7pS4luJMOmFAH3J0NgYEGZT5r+NDg==
   dependencies:
     "@ctrl/tinycolor" "^3.4.1"
     "@element-plus/icons-vue" "^2.3.1"
@@ -2175,7 +2175,7 @@ element-plus@^2.7.5:
     "@types/lodash-es" "^4.17.6"
     "@vueuse/core" "^9.1.0"
     async-validator "^4.2.5"
-    dayjs "^1.11.3"
+    dayjs "^1.11.13"
     escape-html "^1.0.3"
     lodash "^4.17.21"
     lodash-es "^4.17.21"
