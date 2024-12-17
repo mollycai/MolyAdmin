@@ -111,6 +111,7 @@ import { useNav } from '@/layout/hooks/useNav';
 import { useThemeChange } from '@/layout/hooks/useThemeChange';
 import { useTranslationLang } from '@/layout/hooks/useTranslationLang';
 import { useUserStoreHook } from '@/store/modules/user';
+import { useGlobalConfig } from '@/config';
 import { useRouter } from 'vue-router';
 import { initRouter } from '@/router';
 import { Lock, User } from '@element-plus/icons-vue';
@@ -123,18 +124,25 @@ import darkIcon from '@/assets/svg/dark.svg?component';
 import globalization from '@/assets/svg/globalization.svg?component';
 import Check from '@iconify-icons/ep/check';
 
+const { setConfig, getConfig } = useGlobalConfig();
 const router = useRouter();
 const { t } = useI18n();
 const { title, getDropdownItemStyle, getDropdownItemClass } = useNav();
-const { isDark, setModeColor } = useThemeChange();
+const { toggleClass } = useThemeChange();
 const { locale, translationCh, translationEn } = useTranslationLang();
 
+const isDark = ref<boolean>(getConfig().DarkMode);
 const loading = ref(false);
 const ruleFormRef = ref<FormInstance>();
 const ruleForm = reactive({
   username: 'admin',
   password: '123qwe',
 });
+
+const setModeColor = () => {
+  setConfig({ DarkMode: isDark.value });
+  toggleClass(isDark.value, 'dark', document.querySelector('html'));
+};
 
 const onLogin = async (formEl: FormInstance | undefined) => {
   if (!formEl) return;

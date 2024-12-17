@@ -37,7 +37,7 @@ export function useThemeChange() {
   };
 
   // 是否开启暗黑模式
-  const isDark = ref<boolean>(getConfig().DarkMode);
+  const isDark = computed(() => getConfig().DarkMode);
 
   const setPropertyPrimary = (mode: string, i: number, color: string) => {
     document.documentElement.style.setProperty(
@@ -73,14 +73,15 @@ export function useThemeChange() {
   /** 切换日间或夜间模式 */
   const setModeColor = () => {
     const theme = getConfig().Theme;
-    theme === 'light' && isDark.value ? setLayoutThemeColor('default') : setLayoutThemeColor(theme, false);
+    // theme === 'light' && isDark.value ? setLayoutThemeColor('default') : setLayoutThemeColor(theme, false);
+    theme === 'light' && isDark.value && setLayoutThemeColor('default');
     // @TODO 此处可以优化，如果当前的主题是light，切换为夜间模式时，将主题换为default，当切换回为日间模式时，再将主题切换为light
     // if (... === 'light') {
     //   setLayoutThemeColor('light', false);
     // }
     toggleClass(isDark.value, 'dark', document.querySelector('html'));
     // 最后在更新一下element-plus的颜色
-    setEpThemeColor(getConfig().EpThemeColor, false);
+    // setEpThemeColor(getConfig().EpThemeColor, false);
   };
 
   /** 清空缓存并返回登录页 */
