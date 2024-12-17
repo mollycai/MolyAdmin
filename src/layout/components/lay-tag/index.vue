@@ -137,5 +137,6 @@ onBeforeUnmount(() => {
   border-bottom: var(--moly-border-color) 1px solid;
   padding: 3px 6px;
   cursor: pointer;
+  background-color: #fff;
 }
 </style>

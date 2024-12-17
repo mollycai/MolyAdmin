@@ -7,14 +7,14 @@ import { localCache } from '@/utils/cache';
 import { nameSpace } from '@/config/constants';
 
 export function useRefresh() {
-  const { setEpThemeColor, setModeColor, toggleClass } = useThemeChange();
+  const { setLayoutThemeColor, setModeColor, toggleClass } = useThemeChange();
   const { getConfig } = useGlobalConfig();
 
   const currentConfig: PlatformConfigs = localCache.get(nameSpace) || getConfig();
 
   const refresh = () => {
     // 设置主题颜色
-    setEpThemeColor(currentConfig.EpThemeColor, true);
+    setLayoutThemeColor(currentConfig.Theme, false);
     // 设置深浅模式
     setModeColor();
     // 设置布局

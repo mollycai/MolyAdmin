@@ -4,16 +4,15 @@ import { localCache } from '@/utils/cache';
 import { usePermissionStoreHook } from '@/store/modules/permission';
 import { useRefresh } from '@/hooks/useRefresh';
 import { cloneDeep } from 'lodash-es';
-import { ascending, findRouteByPath, formatAsyncRoute } from './utils';
+import { ascending, formatTwoStageRoutes, formatAsyncRoute, formatFlatteningRoutes } from './utils';
 import { isURL } from '@/utils/utils';
 import { DataInfo, multipleTabsKey, userKey } from '@/utils/auth';
 import NProgress from '@/utils/progress';
 import remainingRouter from './modules/remaining';
 import Cookies from 'js-cookie';
-import { useMultiTagsStoreHook } from '@/store/modules/multiTag';
 
 // 自动导入全部静态路由
-const modules: Record<string, any> = import.meta.glob(['./modules/**/*.ts'], {
+const modules: Record<string, any> = import.meta.glob(['./modules/**/*.ts', '!./modules/**/remaining.ts'], {
   eager: true,
 });
 
@@ -22,9 +21,14 @@ const routes = [];
 Object.keys(modules).forEach((key) => {
   routes.push(modules[key].default);
 });
+
 // 静态路由菜单
-export const constantMenus: Array<RouteComponent> = ascending(routes.flat(Infinity));
-// @TODO 考虑下是否需要吧3级路由再拍成2级的，再添加进createRouter
+export const constantMenus: Array<RouteComponent> = ascending(routes.flat(Infinity)).concat(...remainingRouter);
+
+/** 导出处理后的静态路由 */
+export const constantRoutes: Array<RouteRecordRaw> = formatTwoStageRoutes(
+  formatFlatteningRoutes(ascending(routes.flat(Infinity))),
+);
 
 /** 不参与菜单的路由 */
 export const remainingPaths = Object.keys(remainingRouter).map((v) => {
@@ -75,7 +79,7 @@ export function initRouter() {
 /** 创建路由实例 */
 export const router = createRouter({
   history: createWebHistory(),
-  routes: routes,
+  routes: constantRoutes.concat(...(remainingRouter as any)),
 });
 
 /** 重置路由 */
