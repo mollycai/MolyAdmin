@@ -2,11 +2,13 @@ import { RouteComponent, RouteRecordRaw, Router, createRouter, createWebHistory 
 import { getAsyncRoutes } from '@/api/routes'; // 动态路由
 import { localCache } from '@/utils/cache';
 import { usePermissionStoreHook } from '@/store/modules/permission';
+import { useMultiTagsStoreHook } from '@/store/modules/multiTag';
 import { useRefresh } from '@/hooks/useRefresh';
 import { cloneDeep } from 'lodash-es';
 import { ascending, formatTwoStageRoutes, formatAsyncRoute, formatFlatteningRoutes } from './utils';
 import { isURL } from '@/utils/utils';
 import { DataInfo, multipleTabsKey, userKey } from '@/utils/auth';
+import { isEmpty } from 'lodash-es';
 import NProgress from '@/utils/progress';
 import remainingRouter from './modules/remaining';
 import Cookies from 'js-cookie';
@@ -52,6 +54,17 @@ function handleAsyncRoutes(routeList: any[]) {
     });
   }
   usePermissionStoreHook().handleWholeMenus(routeList);
+  addPathMatch();
+}
+
+function addPathMatch() {
+  if (!router.hasRoute('pathMatch')) {
+    router.addRoute({
+      path: '/:pathMatch(.*)',
+      name: 'pathMatch',
+      redirect: '/error/404',
+    });
+  }
 }
 
 /** 初始化路由 */
@@ -89,7 +102,7 @@ export function resetRouter() {
 
 const whiteList = ['/login'];
 
-router.beforeEach((to: ToRouteType, _from, next) => {
+router.beforeEach(async (to: ToRouteType, _from, next) => {
   // @TODO 路由缓存处理机制
   // 获取用户信息
   const userInfo = localCache.get<DataInfo<number>>(userKey);
@@ -104,23 +117,37 @@ router.beforeEach((to: ToRouteType, _from, next) => {
   }
   // @TODO 刷新（考虑是否还有其他更好的策略）
   useRefresh().refresh();
+  /** 如果已经登录并存在登录信息后不能跳转到路由白名单，而是继续保持在当前页面 */
+  function toCorrectRoute() {
+    whiteList.includes(to.fullPath) ? next(_from.fullPath) : next();
+  }
   // 判断是否有权限，下列默认为有权限的操作，无权限需自动重定向到403
   if (Cookies.get(multipleTabsKey) && userInfo) {
     // @TODO 无权限跳转403页面
-    // @TODO 判断是否是超链接，是的话用特定的打开方式
-    // @TODO 刷新时对多标签页的处理
-    if (usePermissionStoreHook().wholeMenus.length === 0 && to.path !== '/login') {
-      initRouter();
+    // 判断是否是超链接，是的话用特定的打开方式
+    if (_from?.name) {
+      if (externalLink) {
+        // @TODO 打开链接
+        NProgress.done();
+      } else {
+        toCorrectRoute();
+      }
+    } else {
+      // 当没用标签名时，刷新时对多标签页的处理
+      if (usePermissionStoreHook().wholeMenus.length === 0 && to.path !== '/login') {
+        initRouter().then((router: Router) => {
+          // @TODO 考虑下是否需要处理多标签页
+          // 确保动态路由完全加入路由列表并且不影响静态路由（
+          if (isEmpty(to.name)) router.push(to.fullPath);
+        });
+      }
+      toCorrectRoute();
     }
   }
-
-  next();
 });
 
 router.afterEach(() => {
   NProgress.done();
 });
-// @TODO 在等录后调用
-// initRouter();
 
 export default router;

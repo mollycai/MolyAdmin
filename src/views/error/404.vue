@@ -7,10 +7,6 @@ defineOptions({
 });
 
 const router = useRouter();
-
-function getSVG() {
-  return new URL('/404.svg', import.meta.url).href;
-}
 </script>
 
 <template>

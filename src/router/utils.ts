@@ -6,6 +6,7 @@ import { RouteRecordRaw, type RouteComponent } from 'vue-router';
 export function ascending(arr: any[]) {
   arr.forEach((item, index) => {
     // 没有rank时自动创建，同时保证路由首页在第一位
+    if (!item.meta) item.meta = {};
     if (!item.meta || !item.meta.rank) item.meta.rank = index + 2;
   });
   return arr.sort((a: { meta: { rank: number } }, b: { meta: { rank: number } }) => {
