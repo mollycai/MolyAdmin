@@ -13,7 +13,6 @@ const tagNameSpace = 'responsive-tags';
 export const useMultiTagsStore = defineStore({
   id: 'multiTags',
   state: () => ({
-    // 储存标签页 @TODO 有Bug，当开启标签持久化，再关闭，标签仍然缓存
     multiTags: getConfig()?.MultiTagsCache
       ? localCache.get(tagNameSpace)
       : [

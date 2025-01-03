@@ -1,13 +1,12 @@
-import { defineStore } from 'pinia';
-import { userType } from '../types';
-import { localCache } from '@/utils/cache';
-import { DataInfo, setToken, userKey } from '@/utils/auth';
 import { UserResult, getLogin } from '@/api/user';
-import { store } from '..';
 import { routerArrays } from '@/layout/types';
-import { resetRouter, router } from '@/router';
+import { router } from '@/router';
+import { DataInfo, removeToken, setToken, userKey } from '@/utils/auth';
+import { localCache } from '@/utils/cache';
+import { defineStore } from 'pinia';
+import { store } from '..';
+import { userType } from '../types';
 import { useMultiTagsStoreHook } from './multiTag';
-import { removeToken } from '@/utils/auth';
 
 export const useUserStore = defineStore({
   id: 'user',
@@ -76,7 +75,8 @@ export const useUserStore = defineStore({
       this.permissions = [];
       removeToken();
       useMultiTagsStoreHook().handleTags('equal', [...routerArrays]);
-      resetRouter();
+      // @TODO 待考虑不加resetRouter的影响
+      // resetRouter();
       router.push('/login');
     },
     /** 刷新`token` */

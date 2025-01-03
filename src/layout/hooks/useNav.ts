@@ -1,6 +1,7 @@
 import { remainingPaths } from '@/router';
 import { useAppStoreHook } from '@/store/modules/app';
 import { usePermissionStoreHook } from '@/store/modules/permission';
+import { useUserStoreHook } from '@/store/modules/user';
 import { emitter } from '@/utils/mitt';
 import { storeToRefs } from 'pinia';
 import { computed, ref } from 'vue';
@@ -68,7 +69,7 @@ export function useNav() {
 
   /** 退出登录 */
   function logout() {
-    // @TODO 退出登录
+    useUserStoreHook().logOut();
   }
 
   /** 设置面板事件 */

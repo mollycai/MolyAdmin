@@ -1,9 +1,14 @@
 /** 操作主题的Hook */
-import { computed, ref } from 'vue';
+import { getPlatformConfig, useGlobalConfig } from '@/config';
+import { nameSpace } from '@/config/constants';
+import { router } from '@/router';
+import { useMultiTagsStoreHook } from '@/store/modules/multiTag';
+import { removeToken } from '@/utils/auth';
+import { localCache } from '@/utils/cache';
 import { darken, lighten } from '@/utils/color';
-import { themeColorsType } from '../types';
-import { useGlobalConfig } from '@/config';
+import { computed, ref } from 'vue';
 import { setThemeVariables } from '../theme';
+import { routerArrays, themeColorsType } from '../types';
 
 export function useThemeChange() {
   const { setConfig, getConfig } = useGlobalConfig();
@@ -37,7 +42,7 @@ export function useThemeChange() {
   };
 
   // 是否开启暗黑模式
-  const isDark = ref<boolean>(getConfig().DarkMode);
+  const isDark = computed(() => getConfig().DarkMode);
 
   const setPropertyPrimary = (mode: string, i: number, color: string) => {
     document.documentElement.style.setProperty(
@@ -73,27 +78,47 @@ export function useThemeChange() {
   /** 切换日间或夜间模式 */
   const setModeColor = () => {
     const theme = getConfig().Theme;
-    theme === 'light' && isDark.value ? setLayoutThemeColor('default') : setLayoutThemeColor(theme, false);
+    // theme === 'light' && isDark.value ? setLayoutThemeColor('default') : setLayoutThemeColor(theme, false);
+    theme === 'light' && isDark.value && setLayoutThemeColor('default');
     // @TODO 此处可以优化，如果当前的主题是light，切换为夜间模式时，将主题换为default，当切换回为日间模式时，再将主题切换为light
     // if (... === 'light') {
     //   setLayoutThemeColor('light', false);
     // }
     toggleClass(isDark.value, 'dark', document.querySelector('html'));
     // 最后在更新一下element-plus的颜色
-    setEpThemeColor(getConfig().EpThemeColor, false);
+    // setEpThemeColor(getConfig().EpThemeColor, false);
   };
+
+  const resetLoading = ref<boolean>(false);
 
   /** 清空缓存并返回登录页 */
   const onReset = () => {
-    // @TODO
+    // clear不能清除vususe的响应式storage，暂时采用重新请求配置并覆盖这种方案
+    resetLoading.value = true;
+    getPlatformConfig()
+      .then((config) => {
+        removeToken();
+        localCache.clear();
+        useGlobalConfig().setConfig(config);
+        localCache.remove(nameSpace);
+        router.push('/login');
+        useMultiTagsStoreHook().handleTags('equal', [...routerArrays]);
+        // @TODO 待考虑不加resetRouter的影响
+        // resetRouter();
+      })
+      .finally(() => {
+        resetLoading.value = false;
+      });
   };
 
   return {
     isDark,
     themeColors,
+    resetLoading,
     toggleClass,
     setLayoutThemeColor,
     setEpThemeColor,
     setModeColor,
+    onReset,
   };
 }

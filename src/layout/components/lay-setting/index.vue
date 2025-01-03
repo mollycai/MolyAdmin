@@ -120,14 +120,14 @@ const pClass = computed(() => {
   return ['mb-[12px]', 'font-medium', 'text-sm', 'dark:text-white', 'font-semibold'];
 });
 
-const { themeColors, setLayoutThemeColor, setModeColor, toggleClass } = useThemeChange();
+const { isDark, themeColors, setLayoutThemeColor, setModeColor, toggleClass } = useThemeChange();
 const { getConfig, setConfig } = useGlobalConfig();
 const { t } = useTranslationLang();
 const { device } = useNav();
 
 const theme = computed(() => getConfig().Theme);
 
-const mode = ref<number>(getConfig().DarkMode ? 1 : 0);
+const mode = ref<number>(isDark.value ? 1 : 0);
 const modeOptions = computed(() => {
   return [
     {

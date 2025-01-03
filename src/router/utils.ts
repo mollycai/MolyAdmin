@@ -6,6 +6,7 @@ import { RouteRecordRaw, type RouteComponent } from 'vue-router';
 export function ascending(arr: any[]) {
   arr.forEach((item, index) => {
     // 没有rank时自动创建，同时保证路由首页在第一位
+    if (!item.meta) item.meta = {};
     if (!item.meta || !item.meta.rank) item.meta.rank = index + 2;
   });
   return arr.sort((a: { meta: { rank: number } }, b: { meta: { rank: number } }) => {
@@ -127,4 +128,29 @@ export function getParentPaths(value: string, routes: RouteRecordRaw[], key = 'p
     return [];
   }
   return dfs(routes, value, []);
+}
+
+/**
+ * 一维数组处理成多级嵌套数组（三级及以上的路由全部拍成二级，keep-alive 只支持到二级缓存）
+ * @param routesList 处理后的一维路由菜单数组
+ * @returns 返回将一维数组重新处理成规定路由的格式
+ */
+export function formatTwoStageRoutes(routesList: RouteRecordRaw[]) {
+  if (routesList.length === 0) return routesList;
+  const newRoutesList: RouteRecordRaw[] = [];
+  routesList.forEach((item: RouteRecordRaw) => {
+    if (item.path === '/') {
+      newRoutesList.push({
+        component: item.component,
+        name: item.name,
+        path: item.path,
+        redirect: item.redirect,
+        meta: item.meta,
+        children: [],
+      });
+    } else {
+      newRoutesList[0]?.children.push({ ...item });
+    }
+  });
+  return newRoutesList;
 }
