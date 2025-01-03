@@ -12,19 +12,19 @@
 </template>
 
 <script lang="ts" setup>
-import laySetting from './components/lay-setting/index.vue';
-import switchLayoutList from '@/layout/switch/index';
 import BackTopIcon from '@/assets/svg/back_top.svg?component';
+import switchLayoutList from '@/layout/switch/index';
+import laySetting from './components/lay-setting/index.vue';
 
-import { computed, ref } from 'vue';
 import { useGlobalConfig } from '@/config';
-import { cloneDeep } from 'lodash-es';
-import { useResizeObserver } from '@vueuse/core';
 import { useAppStoreHook } from '@/store/modules/app';
+import { useResizeObserver } from '@vueuse/core';
+import { cloneDeep } from 'lodash-es';
+import { computed, ref } from 'vue';
 import { deviceType } from './hooks/useDevice';
 import { useNav } from './hooks/useNav';
 
-const { getConfig } = useGlobalConfig();
+const { getConfig, setConfig } = useGlobalConfig();
 
 const layoutList = cloneDeep(switchLayoutList);
 const layout = computed(() => getConfig().Layout ?? 'vertical');
@@ -58,6 +58,12 @@ useResizeObserver(appWrapperRef, (entries) => {
    */
   if (width > 0 && width <= 760) {
     toggle('mobile', false);
+    // 当布局为垂直布局时，自动切换为水平布局，（但暂时不考虑宽度复原时，自动切换回垂直布局）
+    if (layout.value === 'horizontal') {
+      setConfig({ Layout: 'vertical' });
+      // @TODO 暂时没有更好的方案，只能代码控制刷新
+      window.location.reload();
+    }
   } else if (width > 760 && width <= 990) {
     toggle('desktop', false);
   } else if (width > 990 && !useAppStoreHook().getSidebarIsClickCollapse) {
