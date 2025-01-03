@@ -1,9 +1,14 @@
 /** 操作主题的Hook */
-import { computed, ref } from 'vue';
+import { getPlatformConfig, useGlobalConfig } from '@/config';
+import { nameSpace } from '@/config/constants';
+import { router } from '@/router';
+import { useMultiTagsStoreHook } from '@/store/modules/multiTag';
+import { removeToken } from '@/utils/auth';
+import { localCache } from '@/utils/cache';
 import { darken, lighten } from '@/utils/color';
-import { themeColorsType } from '../types';
-import { useGlobalConfig } from '@/config';
+import { computed, ref } from 'vue';
 import { setThemeVariables } from '../theme';
+import { routerArrays, themeColorsType } from '../types';
 
 export function useThemeChange() {
   const { setConfig, getConfig } = useGlobalConfig();
@@ -84,17 +89,36 @@ export function useThemeChange() {
     // setEpThemeColor(getConfig().EpThemeColor, false);
   };
 
+  const resetLoading = ref<boolean>(false);
+
   /** 清空缓存并返回登录页 */
   const onReset = () => {
-    // @TODO
+    // clear不能清除vususe的响应式storage，暂时采用重新请求配置并覆盖这种方案
+    resetLoading.value = true;
+    getPlatformConfig()
+      .then((config) => {
+        removeToken();
+        localCache.clear();
+        useGlobalConfig().setConfig(config);
+        localCache.remove(nameSpace);
+        router.push('/login');
+        useMultiTagsStoreHook().handleTags('equal', [...routerArrays]);
+        // @TODO 待考虑不加resetRouter的影响
+        // resetRouter();
+      })
+      .finally(() => {
+        resetLoading.value = false;
+      });
   };
 
   return {
     isDark,
     themeColors,
+    resetLoading,
     toggleClass,
     setLayoutThemeColor,
     setEpThemeColor,
     setModeColor,
+    onReset,
   };
 }

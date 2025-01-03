@@ -96,6 +96,8 @@ declare global {
       rank?: number;
       /** 当前菜单名称是否固定显示在标签页且不可关闭（默认`false`） */
       fixedTag?: boolean;
+      /** 当前菜单是否是后端返回的 */
+      backstage?: boolean;
     };
     /** 子路由配置项 */
     children?: Array<RouteChildrenConfigsTable>;

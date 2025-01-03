@@ -19,17 +19,20 @@
       </el-scrollbar>
 
       <div class="flex justify-end p-3 border-t-[1px] border-solid border-[var(--moly-border-color)]">
-        <el-button type="danger" text bg @click="onReset">{{ t('panel.clearCache') }}</el-button>
+        <el-button type="danger" text bg @click="onReset" :loading="resetLoading">
+          {{ t('panel.clearCache') }}
+        </el-button>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { useThemeChange } from '@/layout/hooks/useThemeChange';
+import { useTranslationLang } from '@/layout/hooks/useTranslationLang';
 import { emitter } from '@/utils/mitt';
 import { onClickOutside } from '@vueuse/core';
-import { ref, onMounted, onBeforeUnmount } from 'vue';
-import { useTranslationLang } from '@/layout/hooks/useTranslationLang';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
 
 import CloseIcon from '@iconify-icons/ep/close';
 
@@ -37,8 +40,8 @@ const target = ref(null);
 const show = ref<Boolean>(false);
 const { t } = useTranslationLang();
 
-// @TODO 重置设置
-function onReset() {}
+// 重置设置
+const { resetLoading, onReset } = useThemeChange();
 
 onClickOutside(target, (event: any) => {
   if (event.clientX > target.value.offsetLeft) return;

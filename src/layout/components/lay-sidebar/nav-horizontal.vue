@@ -40,22 +40,22 @@
 </template>
 
 <script lang="ts" setup>
-import LaySidebarItem from './components/sidebar-item.vue';
-import search from '../lay-search/index.vue';
-import notice from '../lay-notice/index.vue';
 import fullScreen from '../lay-navbar/components/full-screen.vue';
 import translation from '../lay-navbar/components/translation.vue';
+import notice from '../lay-notice/index.vue';
+import search from '../lay-search/index.vue';
+import LaySidebarItem from './components/sidebar-item.vue';
 
-import { usePermissionStoreHook } from '@/store/modules/permission';
 import { useGlobalConfig } from '@/config';
-import { computed, ref, onMounted, watch } from 'vue';
-import { isEmpty } from 'lodash-es';
-import { useRoute } from 'vue-router';
 import { useNav } from '@/layout/hooks/useNav';
 import { useTranslationLang } from '@/layout/hooks/useTranslationLang';
+import { usePermissionStoreHook } from '@/store/modules/permission';
+import { isEmpty } from 'lodash-es';
+import { computed, onMounted, ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
 
-import Setting from '@iconify-icons/ri/settings-3-line';
 import LogoutCircleRLine from '@iconify-icons/ri/logout-circle-r-line';
+import Setting from '@iconify-icons/ri/settings-3-line';
 
 const { getConfig } = useGlobalConfig();
 

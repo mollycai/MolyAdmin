@@ -42,7 +42,6 @@ export const useGlobalConfig = createGlobalState(() => {
 
   const getConfig = (key?: string): PlatformConfigs => {
     // @TODO key判断机制
-    // localCache.get(nameSpace);
     return !isEmpty(globalConfig.value) ? globalConfig.value : localCache.get(nameSpace);
   };
 

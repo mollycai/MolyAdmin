@@ -1,17 +1,15 @@
-import { RouteComponent, RouteRecordRaw, Router, createRouter, createWebHistory } from 'vue-router';
 import { getAsyncRoutes } from '@/api/routes'; // 动态路由
-import { localCache } from '@/utils/cache';
-import { usePermissionStoreHook } from '@/store/modules/permission';
-import { useMultiTagsStoreHook } from '@/store/modules/multiTag';
 import { useRefresh } from '@/hooks/useRefresh';
-import { cloneDeep } from 'lodash-es';
-import { ascending, formatTwoStageRoutes, formatAsyncRoute, formatFlatteningRoutes } from './utils';
-import { isURL } from '@/utils/utils';
-import { DataInfo, multipleTabsKey, userKey } from '@/utils/auth';
-import { isEmpty } from 'lodash-es';
+import { usePermissionStoreHook } from '@/store/modules/permission';
+import { DataInfo, multipleTabsKey, removeToken, userKey } from '@/utils/auth';
+import { localCache } from '@/utils/cache';
 import NProgress from '@/utils/progress';
-import remainingRouter from './modules/remaining';
+import { isURL } from '@/utils/utils';
 import Cookies from 'js-cookie';
+import { cloneDeep, isEmpty } from 'lodash-es';
+import { RouteComponent, RouteRecordRaw, Router, createRouter, createWebHistory } from 'vue-router';
+import remainingRouter from './modules/remaining';
+import { ascending, formatAsyncRoute, formatFlatteningRoutes, formatTwoStageRoutes } from './utils';
 
 // 自动导入全部静态路由
 const modules: Record<string, any> = import.meta.glob(['./modules/**/*.ts', '!./modules/**/remaining.ts'], {
@@ -97,7 +95,14 @@ export const router = createRouter({
 
 /** 重置路由 */
 export function resetRouter() {
-  // @TODO
+  router.getRoutes().forEach((route) => {
+    const { name, meta } = route;
+    if (name && router.hasRoute(name) && meta?.backstage) {
+      router.removeRoute(name);
+      router.options.routes = formatTwoStageRoutes(formatFlatteningRoutes(ascending(routes.flat(Infinity))));
+    }
+  });
+  usePermissionStoreHook().cleanAllPageCache();
 }
 
 const whiteList = ['/login'];
@@ -142,6 +147,17 @@ router.beforeEach(async (to: ToRouteType, _from, next) => {
         });
       }
       toCorrectRoute();
+    }
+  } else {
+    if (to.path !== '/login') {
+      if (whiteList.indexOf(to.path) !== -1) {
+        next();
+      } else {
+        removeToken();
+        next({ path: '/login' });
+      }
+    } else {
+      next();
     }
   }
 });

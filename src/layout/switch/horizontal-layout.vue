@@ -1,5 +1,5 @@
 <template>
-  <el-container class="h-screen">
+  <el-container class="h-screen main-container">
     <el-header :style="[hideTabs ? 'height: 48px' : 'height: 80px', 'padding: 0px']">
       <!-- 头部导航栏与菜单 -->
       <lay-navbar />

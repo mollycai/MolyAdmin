@@ -50,7 +50,7 @@ export const routerArrays: Array<RouteConfigs> = [
   {
     path: '/welcome',
     meta: {
-      title: 'menus.pureHome',
+      title: '首页',
       icon: 'ep:home-filled',
     },
   },
