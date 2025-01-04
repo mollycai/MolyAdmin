@@ -1,5 +1,5 @@
-import Cookies from 'js-cookie';
 import { useUserStoreHook } from '@/store/modules/user';
+import Cookies from 'js-cookie';
 import { localCache } from './cache';
 
 export interface DataInfo<T> {
@@ -22,10 +22,13 @@ export interface DataInfo<T> {
 }
 
 export const userKey = 'user-info';
-export const TokenKey = 'authorized-token';
+export const tokenKey = 'authorized-token';
 export const multipleTabsKey = 'multiple-tabs';
 
-export function getToken() {}
+/** 获取`token` */
+export function getToken() {
+  return Cookies.get(tokenKey) ? JSON.parse(Cookies.get(tokenKey)) : localCache.get(userKey);
+}
 
 /**
  * 设置token一些信息并无感刷新token
@@ -41,10 +44,10 @@ export function setToken(data: DataInfo<Date>) {
 
   // 设置Cookie过期的天数
   expires > 0
-    ? Cookies.set(TokenKey, cookieString, {
+    ? Cookies.set(tokenKey, cookieString, {
         expires: (expires - Date.now()) / 86400000,
       })
-    : Cookies.set(TokenKey, cookieString);
+    : Cookies.set(tokenKey, cookieString);
   Cookies.set(
     multipleTabsKey,
     'true',
@@ -84,11 +87,18 @@ export function setToken(data: DataInfo<Date>) {
 
 /** 删除Token以及Userinfo */
 export function removeToken() {
-  Cookies.remove(TokenKey);
+  Cookies.remove(tokenKey);
   Cookies.remove(multipleTabsKey);
   localCache.remove(userKey);
 }
 
-export function formatToken() {}
+/** 格式化token（jwt格式） */
+export function formatToken(token: string): string {
+  if (token.startsWith('Bearer')) {
+    return token;
+  } else {
+    return 'Bearer ' + token;
+  }
+}
 
 export function hasPermissions() {}
