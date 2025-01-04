@@ -1,16 +1,17 @@
+import { useUserStoreHook } from '@/store/modules/user';
 import Axios, { AxiosInstance, AxiosRequestConfig, CustomParamsSerializer } from 'axios';
 import { stringify } from 'qs';
-import { MolyHttpError, MolyHttpRequestConfig, MolyHttpResponse, RequestMethods } from './types';
+import { formatToken, getToken } from '../auth';
 import NProgress from '../progress';
-import { ContentTypeEnum } from '@/enums/httpEnums';
+import { MolyHttpError, MolyHttpRequestConfig, MolyHttpResponse, RequestMethods } from './types';
 
 // 相关配置参考：www.axios-js.com/zh-cn/docs/#axios-request-config-1
 const defaultConfig: AxiosRequestConfig = {
   timeout: 10000,
   headers: {
-    Accept: "application/json, text/plain, */*",
-    "Content-Type": "application/json",
-    "X-Requested-With": "XMLHttpRequest"
+    Accept: 'application/json, text/plain, */*',
+    'Content-Type': 'application/json',
+    'X-Requested-With': 'XMLHttpRequest',
   },
   // 数组格式参数序列化
   paramsSerializer: {
@@ -26,10 +27,10 @@ class MolyHttp {
   }
 
   /** token过期后，暂存待执行的请求 */
-  // private static requests: Function[] = [];
+  private static requests: Function[] = [];
 
   /** 防止重复刷新token */
-  // private static isRefreshing = false;
+  private static isRefreshing = false;
 
   /** 初始化配置对象 */
   private static initConfig: MolyHttpRequestConfig = {};
@@ -38,14 +39,14 @@ class MolyHttp {
   private static axiosInstance: AxiosInstance = Axios.create(defaultConfig);
 
   /** 重连原始请求 */
-  // private static retryOriginalRequest(config: MolyHttpRequestConfig) {
-  //   return new Promise((resolve) => {
-  //     MolyHttp.requests.push((token: string) => {
-  //       config.headers['Authorization'] = token;
-  //       resolve(config);
-  //     });
-  //   });
-  // }
+  private static retryOriginalRequest(config: MolyHttpRequestConfig) {
+    return new Promise((resolve) => {
+      MolyHttp.requests.push((token: string) => {
+        config.headers['Authorization'] = formatToken(token);
+        resolve(config);
+      });
+    });
+  }
 
   /** 请求拦截 */
   private httpInterceptorsRequest(): void {
@@ -64,11 +65,45 @@ class MolyHttp {
         }
         /** 请求白名单，放置一些不需要`token`的接口（通过设置请求白名单，防止`token`过期后再请求造成的死循环问题） */
         const whiteList = ['/refresh-token', '/login'];
+        // 不是白名单的api，返回新的promise
         return whiteList.some((url) => config.url?.endsWith(url))
           ? config
           : new Promise((resolve) => {
-              // @TODO 对token判断并进行对应的处理
-              resolve(config);
+              // 对token判断并进行对应的处理
+              const data = getToken();
+              if (data) {
+                const now = new Date().getTime();
+                const expired = parseInt(data.expired) - now <= 0;
+                if (expired) {
+                  // 如果token过期， 并不在刷新状态
+                  if (!MolyHttp.isRefreshing) {
+                    MolyHttp.isRefreshing = true;
+                    // token过期刷新
+                    useUserStoreHook()
+                      .handRefreshToken({ refreshToken: data.refreshToken })
+                      .then((res) => {
+                        // 获取新token
+                        const token = res.data.accessToken;
+                        config.headers['Authorization'] = formatToken(token);
+                        // 遍历并把token传入缓存的请求列表中
+                        MolyHttp.requests.forEach((cb) => cb(token));
+                        // 清空缓存的请求列表
+                        MolyHttp.requests = [];
+                      })
+                      .finally(() => {
+                        MolyHttp.isRefreshing = false;
+                      });
+                  }
+                  // 将config传入缓存的请求列表
+                  resolve(MolyHttp.retryOriginalRequest(config));
+                } else {
+                  // 没有过期
+                  config.headers['Authorization'] = formatToken(data.accessToken);
+                  resolve(config);
+                }
+              } else {
+                resolve(config);
+              }
             });
       },
       (error) => {
