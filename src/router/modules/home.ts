@@ -6,7 +6,7 @@ export default {
   meta: {
     icon: 'ep:home-filled',
     title: '首页',
-    rank: 0
+    rank: 0,
   },
   children: [
     {
@@ -14,7 +14,7 @@ export default {
       name: 'Welcome',
       component: () => import('@/views/welcome/index.vue'),
       meta: {
-        title: '首页'
+        title: '首页',
       },
     },
   ],

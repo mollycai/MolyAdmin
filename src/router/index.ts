@@ -1,4 +1,5 @@
 import { getAsyncRoutes } from '@/api/routes'; // 动态路由
+import { routerNameSpace } from '@/config/constants';
 import { useRefresh } from '@/hooks/useRefresh';
 import { usePermissionStoreHook } from '@/store/modules/permission';
 import { DataInfo, multipleTabsKey, removeToken, userKey } from '@/utils/auth';
@@ -68,7 +69,7 @@ function addPathMatch() {
 /** 初始化路由 */
 export function initRouter() {
   // @TODO 判断是否缓存动态路由，此处默认缓存
-  const key = 'async-routes';
+  const key = routerNameSpace;
   const asyncRouteList = localCache.get(key) as any;
   if (asyncRouteList && asyncRouteList?.length > 0) {
     return new Promise((resolve) => {

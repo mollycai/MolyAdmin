@@ -101,26 +101,26 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, toRaw } from 'vue';
-import type { FormInstance } from 'element-plus';
-import { $t } from '@/plugins/i18n';
-import { bg, illustration } from './utils/static';
-import { loginRules } from './utils/rule';
-import { useI18n } from 'vue-i18n';
+import { useGlobalConfig } from '@/config';
 import { useNav } from '@/layout/hooks/useNav';
 import { useThemeChange } from '@/layout/hooks/useThemeChange';
 import { useTranslationLang } from '@/layout/hooks/useTranslationLang';
-import { useUserStoreHook } from '@/store/modules/user';
-import { useGlobalConfig } from '@/config';
-import { useRouter } from 'vue-router';
+import { $t } from '@/plugins/i18n';
 import { initRouter } from '@/router';
+import { useUserStoreHook } from '@/store/modules/user';
 import { Lock, User } from '@element-plus/icons-vue';
+import type { FormInstance } from 'element-plus';
+import { reactive, ref, toRaw } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
+import { loginRules } from './utils/rule';
+import { bg, illustration } from './utils/static';
 
-import Motion from './utils/motion';
 import feedback from '@/utils/feedback';
+import Motion from './utils/motion';
 
-import dayIcon from '@/assets/svg/day.svg?component';
 import darkIcon from '@/assets/svg/dark.svg?component';
+import dayIcon from '@/assets/svg/day.svg?component';
 import globalization from '@/assets/svg/globalization.svg?component';
 import Check from '@iconify-icons/ep/check';
 
@@ -135,7 +135,7 @@ const isDark = ref<boolean>(getConfig().DarkMode);
 const loading = ref(false);
 const ruleFormRef = ref<FormInstance>();
 const ruleForm = reactive({
-  username: 'admin',
+  username: 'superadmin',
   password: '123qwe',
 });
 // @TODO 此处待优化，因为如果使用useNav的isDark的computed，与v-model相冲突

@@ -83,18 +83,18 @@ export const useUserStore = defineStore({
     async handRefreshToken(data) {
       return new Promise<RefreshTokenResult>((resolve, reject) => {
         refreshTokenApi(data)
-          .then(data => {
+          .then((data) => {
             if (data) {
               setToken(data.data);
               resolve(data);
             }
           })
-          .catch(error => {
+          .catch((error) => {
             reject(error);
           });
       });
-    }
-  }
+    },
+  },
 });
 
 export function useUserStoreHook() {
