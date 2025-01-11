@@ -1,7 +1,7 @@
+import { constantMenus } from '@/router';
+import { ascending, filterNoPermissionTree, filterTree, formatFlatteningRoutes } from '@/router/utils';
 import { defineStore } from 'pinia';
 import { store } from '..';
-import { ascending, filterNoPermissionTree, filterTree, formatFlatteningRoutes } from '@/router/utils';
-import { constantMenus } from '@/router';
 
 export const usePermissionStore = defineStore({
   id: 'permission',
@@ -21,6 +21,7 @@ export const usePermissionStore = defineStore({
       // 过滤掉没有权限并且showLink的路由，并升序排序
       this.wholeMenus = filterNoPermissionTree(filterTree(ascending(this.constantMenus.concat(routes))));
       this.flatteningRoutes = formatFlatteningRoutes(this.constantMenus.concat(routes));
+      console.log(this.wholeMenus);
     },
     /** 清除所有页面缓存 */
     cleanAllPageCache() {

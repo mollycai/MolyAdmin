@@ -1,3 +1,4 @@
+import { routerNameSpace } from '@/config/constants';
 import { useUserStoreHook } from '@/store/modules/user';
 import Cookies from 'js-cookie';
 import { localCache } from './cache';
@@ -90,6 +91,7 @@ export function removeToken() {
   Cookies.remove(tokenKey);
   Cookies.remove(multipleTabsKey);
   localCache.remove(userKey);
+  localCache.remove(routerNameSpace);
 }
 
 /** 格式化token（jwt格式） */
