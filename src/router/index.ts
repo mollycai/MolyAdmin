@@ -1,4 +1,4 @@
-import { getAsyncRoutes } from '@/api/routes'; // 动态路由
+import { getAsyncRoutes } from '@/api/main'; // 动态路由
 import { routerNameSpace } from '@/config/constants';
 import { useRefresh } from '@/hooks/useRefresh';
 import { usePermissionStoreHook } from '@/store/modules/permission';
@@ -78,7 +78,8 @@ export function initRouter() {
     });
   } else {
     return new Promise((resolve) => {
-      getAsyncRoutes().then(({ data }) => {
+      const userId = localCache.get<DataInfo<Date>>(userKey).userId;
+      getAsyncRoutes(userId).then(({ data }) => {
         handleAsyncRoutes(cloneDeep(data));
         // @考虑一下这里是否需要先过滤权限
         localCache.set(key, data);

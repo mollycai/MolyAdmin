@@ -1,4 +1,5 @@
-import { RefreshTokenResult, UserResult, getLogin, refreshTokenApi } from '@/api/user';
+import { getLogin, refreshTokenApi } from '@/api/main';
+import { Result } from '@/api/type';
 import { routerArrays } from '@/layout/types';
 import { router } from '@/router';
 import { DataInfo, removeToken, setToken, userKey } from '@/utils/auth';
@@ -57,10 +58,11 @@ export const useUserStore = defineStore({
     },
     /** 登录 */
     async loginByUsername(data) {
-      return new Promise<UserResult>((resolve, reject) => {
+      return new Promise<Result>((resolve, reject) => {
         getLogin(data)
           .then((data) => {
-            if (data?.success) setToken(data.data);
+            console.log(data);
+            if (data?.code == 200) setToken(data.data);
             resolve(data);
           })
           .catch((error) => {
@@ -81,7 +83,7 @@ export const useUserStore = defineStore({
     },
     /** 刷新`token` */
     async handRefreshToken(data) {
-      return new Promise<RefreshTokenResult>((resolve, reject) => {
+      return new Promise<Result>((resolve, reject) => {
         refreshTokenApi(data)
           .then((data) => {
             if (data) {

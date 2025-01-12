@@ -1,7 +1,7 @@
 import { useUserStoreHook } from '@/store/modules/user';
 import Axios, { AxiosInstance, AxiosRequestConfig, CustomParamsSerializer } from 'axios';
 import { stringify } from 'qs';
-import { formatToken, getToken } from '../auth';
+import { getToken } from '../auth';
 import NProgress from '../progress';
 import { MolyHttpError, MolyHttpRequestConfig, MolyHttpResponse, RequestMethods } from './types';
 
@@ -42,7 +42,7 @@ class MolyHttp {
   private static retryOriginalRequest(config: MolyHttpRequestConfig) {
     return new Promise((resolve) => {
       MolyHttp.requests.push((token: string) => {
-        config.headers['Authorization'] = formatToken(token);
+        config.headers['Authorization'] = token;
         resolve(config);
       });
     });
@@ -84,7 +84,7 @@ class MolyHttp {
                       .then((res) => {
                         // 获取新token
                         const token = res.data.accessToken;
-                        config.headers['Authorization'] = formatToken(token);
+                        config.headers['Authorization'] = token;
                         // 遍历并把token传入缓存的请求列表中
                         MolyHttp.requests.forEach((cb) => cb(token));
                         // 清空缓存的请求列表
@@ -98,7 +98,7 @@ class MolyHttp {
                   resolve(MolyHttp.retryOriginalRequest(config));
                 } else {
                   // 没有过期
-                  config.headers['Authorization'] = formatToken(data.accessToken);
+                  config.headers['Authorization'] = data.accessToken;
                   resolve(config);
                 }
               } else {

@@ -4,6 +4,7 @@ import Cookies from 'js-cookie';
 import { localCache } from './cache';
 
 export interface DataInfo<T> {
+  userId: number;
   /** token */
   accessToken: string;
   /** `accessToken`的过期时间（时间戳） */
@@ -41,7 +42,9 @@ export function setToken(data: DataInfo<Date>) {
   const { isRemembered, loginDay } = useUserStoreHook();
 
   let expires = new Date(data.expires).getTime();
-  const cookieString = JSON.stringify({ accessToken, expires, refreshToken });
+  // const cookieString = JSON.stringify({ accessToken, expires, refreshToken });
+  // TODO 暂时先没有refreshToken
+  const cookieString = JSON.stringify({ accessToken });
 
   // 设置Cookie过期的天数
   expires > 0
@@ -59,13 +62,14 @@ export function setToken(data: DataInfo<Date>) {
       : {},
   );
 
-  function setUserKey({ avatar, username, nickname, roles, permissions }) {
+  function setUserKey({ userId, avatar, username, nickname, roles, permissions }) {
     useUserStoreHook().SET_AVATAR(avatar);
     useUserStoreHook().SET_USERNAME(username);
     useUserStoreHook().SET_NICKNAME(nickname);
     useUserStoreHook().SET_ROLES(roles);
     useUserStoreHook().SET_PERMS(permissions);
     localCache.set(userKey, {
+      userId,
       refreshToken,
       expires,
       avatar,
@@ -76,8 +80,9 @@ export function setToken(data: DataInfo<Date>) {
     });
   }
 
-  const { avatar, username, nickname, roles, permissions } = data;
+  const { avatar, username, nickname, roles, permissions, userId } = data;
   setUserKey({
+    userId,
     avatar,
     username,
     nickname,
