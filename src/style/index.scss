@@ -60,3 +60,21 @@
   transform: translateX(-10px);
   opacity: 0;
 }
+
+.page-conatiner {
+  background-color: #fff;
+  padding: 15px 20px;
+}
+
+/* 移动端分页器适配 */
+@media (max-width: 768px) {
+  .el-pagination {
+    font-size: 10px; /* 调整字体大小 */
+  }
+  .el-pagination__sizes {
+    display: none; /* 隐藏页面大小选择器 */
+  }
+  .el-pagination__jump {
+    display: none !important; /* 隐藏跳转功能 */
+  }
+}

@@ -1,34 +1,5 @@
 import { http } from '@/utils/http';
-
-interface Result {
-  data?: any;
-  msg: string;
-  code: number;
-  timestamp: Date;
-}
-
-interface PaginatingResult {
-  data?: PaginatingData;
-  msg: string;
-  code: number;
-  timestamp: Date;
-}
-
-interface PaginatingData {
-  records: Array<any>;
-  total: number;
-  pageNum: number;
-  pageSize: number;
-}
-
-interface PaginatingDto {
-  pageNum: number;
-  pageSize: number;
-  params?: {
-    beginTime?: string;
-    endTime?: string;
-  };
-}
+import { PaginatingDto, PaginatingResult, Result } from './type';
 
 interface ListRoleDto extends PaginatingDto {
   roleId?: string;
@@ -67,18 +38,20 @@ interface BatchAuthDto {
 interface ListUserDto extends PaginatingDto {
   userId?: number;
   userName?: string;
+  nickName?: string;
+  phoneNumber?: string;
   status?: string;
 }
 
 interface CreateUserDto {
   deptId?: number;
-  roleId: number;
+  roleIds: number[];
   postId?: number;
   userName: string;
   nickName: string;
   password: string;
   email?: string;
-  phonenumber?: string;
+  phoneNumber?: string;
   sex?: string;
   avatar?: string;
   status?: string;
@@ -189,7 +162,9 @@ export const getUnallocatedUsersByRoleId = (allocatedListDto: AllocatedListDto) 
  */
 export const roleMenuTreeSelect = (roleId: number) => {
   return http.request<Result>('get', '/api/system/role/roleMenuTreeSelect', {
-    params: roleId,
+    params: {
+      roleId,
+    },
   });
 };
 
@@ -212,6 +187,19 @@ export const batchAuthorizeUsers = (authDto: BatchAuthDto) => {
 export const batchRevokeUsers = (revokeDto: BatchAuthDto) => {
   return http.request<Result>('post', '/api/system/role/auth/cancel', {
     data: revokeDto,
+  });
+};
+
+/**
+ * 根据角色ID获取菜单
+ * @param roleId
+ * @returns
+ */
+export const getMenusByRoleId = (roleId: number) => {
+  return http.request<Result>('get', `/api/system/role/roleMenuTreeSelect`, {
+    params: {
+      roleId,
+    },
   });
 };
 
@@ -253,10 +241,19 @@ export const updateUser = (updateUserDto: UpdateUserDto) => {
  * @param userId
  * @returns
  */
-export const removeUser = (userId: number[]) => {
+export const removeUser = (userIds: number[]) => {
   return http.request<Result>('delete', `/api/system/user`, {
-    params: userId,
+    data: {
+      userIds,
+    },
   });
+};
+
+/**
+ * 获取角色选项
+ */
+export const getRoleOptions = () => {
+  return http.request<Result>('get', `/api/system/user/roleOptions`);
 };
 
 /**
@@ -265,18 +262,11 @@ export const removeUser = (userId: number[]) => {
  * @returns
  */
 export const getRolesByUserId = (userId: number) => {
-  return http.request<Result>('get', `/api/system/user`, {
-    params: userId,
+  return http.request<Result>('get', `/api/system/user/role`, {
+    params: {
+      userId,
+    },
   });
-};
-
-/**
- * 根据角色ID获取菜单
- * @param roleId
- * @returns
- */
-export const getMenusByRoleId = (roleId: number) => {
-  return http.request<Result>('get', `/api/system/menu/role/${roleId}`);
 };
 
 /**
@@ -320,6 +310,8 @@ export const updateMenu = (updateMenuDto: UpdateMenuDto) => {
  */
 export const deleteMenu = (menuId: number) => {
   return http.request<Result>('delete', `/api/system/menu`, {
-    params: menuId,
+    params: {
+      menuId,
+    },
   });
 };

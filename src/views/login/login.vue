@@ -102,6 +102,7 @@
 
 <script setup lang="ts">
 import { useGlobalConfig } from '@/config';
+import { CodeEnum } from '@/enums/httpEnums';
 import { useNav } from '@/layout/hooks/useNav';
 import { useThemeChange } from '@/layout/hooks/useThemeChange';
 import { useTranslationLang } from '@/layout/hooks/useTranslationLang';
@@ -110,7 +111,7 @@ import { initRouter } from '@/router';
 import { useUserStoreHook } from '@/store/modules/user';
 import { Lock, User } from '@element-plus/icons-vue';
 import type { FormInstance } from 'element-plus';
-import { reactive, ref, toRaw } from 'vue';
+import { onBeforeUnmount, onMounted, reactive, ref, toRaw } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { loginRules } from './utils/rule';
@@ -152,7 +153,7 @@ const onLogin = async (formEl: FormInstance | undefined) => {
       useUserStoreHook()
         .loginByUsername({ username: ruleForm.username, password: ruleForm.password })
         .then((res) => {
-          if (res.success) {
+          if (res.code === CodeEnum.SUCCESS) {
             // 获取后端路由
             return initRouter().then(() => {
               // @TODO topmenu暂时为welcome
@@ -168,6 +169,21 @@ const onLogin = async (formEl: FormInstance | undefined) => {
     }
   });
 };
+
+/** 使用公共函数，避免`removeEventListener`失效 */
+function onkeypress({ code }: KeyboardEvent) {
+  if (['Enter', 'NumpadEnter'].includes(code)) {
+    onLogin(ruleFormRef.value);
+  }
+}
+
+onMounted(() => {
+  window.document.addEventListener('keypress', onkeypress);
+});
+
+onBeforeUnmount(() => {
+  window.document.removeEventListener('keypress', onkeypress);
+});
 </script>
 
 <style scoped>

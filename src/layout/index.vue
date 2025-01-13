@@ -18,6 +18,7 @@ import laySetting from './components/lay-setting/index.vue';
 
 import { useGlobalConfig } from '@/config';
 import { useAppStoreHook } from '@/store/modules/app';
+import { throttleFunction } from '@/utils/utils';
 import { useResizeObserver } from '@vueuse/core';
 import { cloneDeep } from 'lodash-es';
 import { computed, ref } from 'vue';
@@ -46,32 +47,34 @@ function toggle(device: deviceType, bool: boolean) {
   useAppStoreHook().toggleSideBar(bool, 'resize');
 }
 // 响应式布局
-useResizeObserver(appWrapperRef, (entries) => {
-  const entry = entries[0];
-  const { width, height } = entry.contentRect;
-  useAppStoreHook().setViewportSize({ width, height });
-
-  /** width app-wrapper类容器宽度
-   * 0 < width <= 760 隐藏侧边栏
-   * 760 < width <= 990 折叠侧边栏
-   * width > 990 展开侧边栏
-   */
-  if (width > 0 && width <= 760) {
-    toggle('mobile', false);
-    // 当布局为垂直布局时，自动切换为水平布局，（但暂时不考虑宽度复原时，自动切换回垂直布局）
-    if (layout.value === 'horizontal') {
-      setConfig({ Layout: 'vertical' });
-      // @TODO 暂时没有更好的方案，只能代码控制刷新
-      window.location.reload();
+useResizeObserver(
+  appWrapperRef,
+  throttleFunction((entries) => {
+    const entry = entries[0];
+    const { width, height } = entry.contentRect;
+    useAppStoreHook().setViewportSize({ width, height });
+    /** width app-wrapper类容器宽度
+     * 0 < width <= 760 隐藏侧边栏
+     * 760 < width <= 990 折叠侧边栏
+     * width > 990 展开侧边栏
+     */
+    if (width > 0 && width <= 760) {
+      toggle('mobile', false);
+      // 当布局为垂直布局时，自动切换为水平布局，（但暂时不考虑宽度复原时，自动切换回垂直布局）
+      if (layout.value === 'horizontal') {
+        setConfig({ Layout: 'vertical' });
+        // @TODO 暂时没有更好的方案，只能代码控制刷新
+        window.location.reload();
+      }
+    } else if (width > 760 && width <= 990) {
+      toggle('desktop', false);
+    } else if (width > 990 && !useAppStoreHook().getSidebarIsClickCollapse) {
+      toggle('desktop', true);
+    } else {
+      toggle('desktop', false);
     }
-  } else if (width > 760 && width <= 990) {
-    toggle('desktop', false);
-  } else if (width > 990 && !useAppStoreHook().getSidebarIsClickCollapse) {
-    toggle('desktop', true);
-  } else {
-    toggle('desktop', false);
-  }
-});
+  }),
+);
 </script>
 
 <style lang="scss" scoped>
