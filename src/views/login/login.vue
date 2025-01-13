@@ -102,6 +102,7 @@
 
 <script setup lang="ts">
 import { useGlobalConfig } from '@/config';
+import { CodeEnum } from '@/enums/httpEnums';
 import { useNav } from '@/layout/hooks/useNav';
 import { useThemeChange } from '@/layout/hooks/useThemeChange';
 import { useTranslationLang } from '@/layout/hooks/useTranslationLang';
@@ -152,7 +153,7 @@ const onLogin = async (formEl: FormInstance | undefined) => {
       useUserStoreHook()
         .loginByUsername({ username: ruleForm.username, password: ruleForm.password })
         .then((res) => {
-          if (res.code === 200) {
+          if (res.code === CodeEnum.SUCCESS) {
             // 获取后端路由
             return initRouter().then(() => {
               // @TODO topmenu暂时为welcome

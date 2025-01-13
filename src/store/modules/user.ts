@@ -1,5 +1,6 @@
 import { getLogin, refreshTokenApi } from '@/api/main';
 import { Result } from '@/api/type';
+import { CodeEnum } from '@/enums/httpEnums';
 import { routerArrays } from '@/layout/types';
 import { router } from '@/router';
 import { DataInfo, removeToken, setToken, userKey } from '@/utils/auth';
@@ -61,8 +62,7 @@ export const useUserStore = defineStore({
       return new Promise<Result>((resolve, reject) => {
         getLogin(data)
           .then((data) => {
-            console.log(data);
-            if (data?.code == 200) setToken(data.data);
+            if (data?.code == CodeEnum.SUCCESS) setToken(data.data);
             resolve(data);
           })
           .catch((error) => {

@@ -38,18 +38,20 @@ interface BatchAuthDto {
 interface ListUserDto extends PaginatingDto {
   userId?: number;
   userName?: string;
+  nickName?: string;
+  phoneNumber?: string;
   status?: string;
 }
 
 interface CreateUserDto {
   deptId?: number;
-  roleId: number;
+  roleIds: number[];
   postId?: number;
   userName: string;
   nickName: string;
   password: string;
   email?: string;
-  phonenumber?: string;
+  phoneNumber?: string;
   sex?: string;
   avatar?: string;
   status?: string;
@@ -239,12 +241,19 @@ export const updateUser = (updateUserDto: UpdateUserDto) => {
  * @param userId
  * @returns
  */
-export const removeUser = (userId: number[]) => {
+export const removeUser = (userIds: number[]) => {
   return http.request<Result>('delete', `/api/system/user`, {
-    params: {
-      userId,
+    data: {
+      userIds,
     },
   });
+};
+
+/**
+ * 获取角色选项
+ */
+export const getRoleOptions = () => {
+  return http.request<Result>('get', `/api/system/user/roleOptions`);
 };
 
 /**
@@ -253,7 +262,7 @@ export const removeUser = (userId: number[]) => {
  * @returns
  */
 export const getRolesByUserId = (userId: number) => {
-  return http.request<Result>('get', `/api/system/user`, {
+  return http.request<Result>('get', `/api/system/user/role`, {
     params: {
       userId,
     },

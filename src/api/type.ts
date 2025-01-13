@@ -22,8 +22,6 @@ export interface PaginatingData {
 export interface PaginatingDto {
   pageNum: number;
   pageSize: number;
-  params?: {
-    beginTime?: string;
-    endTime?: string;
-  };
+  beginTime?: string;
+  endTime?: string;
 }
