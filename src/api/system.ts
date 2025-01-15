@@ -128,8 +128,10 @@ export const updateRole = (updateRoleDto: UpdateRoleDto) => {
  * @returns
  */
 export const removeRole = (roleIds: number[]) => {
-  return http.request<Result>('delete', `/api/system/role/`, {
-    data: roleIds,
+  return http.request<Result>('delete', `/api/system/role`, {
+    data: {
+      roleIds,
+    },
   });
 };
 
@@ -166,6 +168,15 @@ export const roleMenuTreeSelect = (roleId: number) => {
       roleId,
     },
   });
+};
+
+/**
+ * 查询所有菜单列表
+ * @param roleId
+ * @returns
+ */
+export const menuTreeSelect = () => {
+  return http.request<Result>('get', '/api/system/role/menuTreeSelect');
 };
 
 /**

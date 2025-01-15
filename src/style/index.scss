@@ -78,3 +78,8 @@
     display: none !important; /* 隐藏跳转功能 */
   }
 }
+
+.el-table th {
+  background-color: #f7f7f7 !important; /* 灰色背景 */
+  color: #444444; /* 字体颜色 */
+}

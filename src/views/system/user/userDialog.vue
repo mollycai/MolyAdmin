@@ -133,6 +133,7 @@ const formRules = reactive<FormRules>({
   phoneNumber: [{ pattern: /^[1][3-9][0-9]{9}$/, message: '手机号码格式不正确', trigger: 'blur' }],
   email: [{ pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, message: '邮箱格式不正确', trigger: 'blur' }],
   roleIds: [{ required: true, message: '请选择至少一个角色', trigger: 'change' }],
+  remark: [{ max: 200, message: '备注长度不能超过200个字符', trigger: 'blur' }],
 });
 
 const closeDialog = () => {
