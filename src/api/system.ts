@@ -319,9 +319,9 @@ export const updateMenu = (updateMenuDto: UpdateMenuDto) => {
  * @param menuId 菜单ID
  * @returns
  */
-export const deleteMenu = (menuId: number) => {
+export const removeMenu = (menuId: number) => {
   return http.request<Result>('delete', `/api/system/menu`, {
-    params: {
+    data: {
       menuId,
     },
   });

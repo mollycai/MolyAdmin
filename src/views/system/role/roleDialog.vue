@@ -32,6 +32,7 @@
         <el-checkbox v-model="roleForm.menuCheckStrictly" @change="checkedTreeConnect($event)"> 父子联动 </el-checkbox>
         <el-tree
           class="tree-border"
+          v-loading="parentMenuListLoading"
           ref="menuRef"
           :data="menuTree"
           :check-strictly="!roleForm.menuCheckStrictly"
@@ -92,6 +93,7 @@ const menuTree = ref<any>([]);
 const menuRef = ref(null);
 const menuExpand = ref<boolean>(false);
 const menuNodeAll = ref<boolean>(false);
+const parentMenuListLoading = ref<boolean>(false);
 
 // 暴露给父级组件操作的方法
 const setChecked = (v) => {
@@ -182,13 +184,16 @@ const checkedTreeConnect = (value) => {
 };
 
 onMounted(() => {
+  parentMenuListLoading.value = true;
   menuTreeSelect()
     .then((data) => {
       if (data.code === CodeEnum.SUCCESS) {
         menuTree.value = data.data;
       }
     })
-    .finally(() => {});
+    .finally(() => {
+      parentMenuListLoading.value = false;
+    });
 });
 </script>
 
