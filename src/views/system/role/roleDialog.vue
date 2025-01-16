@@ -4,6 +4,7 @@
     :title="status === 'Edit' ? '修改角色' : '添加角色'"
     width="600px"
     @close="closeDialog"
+    align-center
   >
     <el-form ref="roleFormRef" :model="roleForm" :rules="formRules" label-width="100px" size="default">
       <!-- 角色名称 -->

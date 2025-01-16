@@ -1,5 +1,5 @@
 <template>
-  <div class="page-conatiner">
+  <div class="page-container">
     <!-- 搜索表单 -->
     <el-form :model="searchForm" inline>
       <!-- 角色名称 -->
@@ -38,6 +38,8 @@
         <el-button :icon="Refresh" @click="resetSearchForm">重置</el-button>
       </el-form-item>
     </el-form>
+  </div>
+  <div class="page-container">
     <!-- 操作 -->
     <div class="flex mb-[15px]">
       <el-button type="primary" :icon="Plus" @click="createRole" plain>新增</el-button>
@@ -96,8 +98,8 @@
         :total="total"
       />
     </div>
-    <RoleDialog ref="roleDialogRef" :status="roleDialogStatus" @refresh="handlePageChange(pageParams)"></RoleDialog>
   </div>
+  <RoleDialog ref="roleDialogRef" :status="roleDialogStatus" @refresh="handlePageChange(pageParams)"></RoleDialog>
 </template>
 <script lang="ts" setup>
 import { getAllRoles, removeRole, roleMenuTreeSelect } from '@/api/system';

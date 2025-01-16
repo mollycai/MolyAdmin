@@ -1,5 +1,5 @@
 <template>
-  <div class="page-conatiner">
+  <div class="page-container">
     <!-- 搜索表单 -->
     <el-form ref="searchFormRef" :model="searchFormDto" inline>
       <el-form-item label="菜单名称" prop="roleName">
@@ -16,6 +16,8 @@
         <el-button :icon="Refresh" @click="resetSearchForm">重置</el-button>
       </el-form-item>
     </el-form>
+  </div>
+  <div class="page-container">
     <div class="flex mb-[15px]">
       <el-button type="primary" :icon="Plus" @click="createMenuFromRoot" plain>新增</el-button>
       <el-button type="warning" :icon="Sort" @click="toggleExpandAll" plain>展开/折叠</el-button>

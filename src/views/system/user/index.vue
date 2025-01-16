@@ -1,5 +1,5 @@
 <template>
-  <div class="page-conatiner">
+  <div class="page-container">
     <!-- 搜索表单 -->
     <el-form
       :model="searchFormDto"
@@ -62,6 +62,8 @@
         </el-col>
       </el-row>
     </el-form>
+  </div>
+  <div class="page-container">
     <!-- 操作 -->
     <div class="flex mb-[15px]">
       <el-button type="primary" :icon="Plus" @click="addUser" plain>新增</el-button>
