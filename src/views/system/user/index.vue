@@ -1,7 +1,13 @@
 <template>
   <div class="page-conatiner">
     <!-- 搜索表单 -->
-    <el-form :model="searchFormDto" ref="searchFormRef" label-width="100px" class="search-form">
+    <el-form
+      :model="searchFormDto"
+      ref="searchFormRef"
+      label-width="100px"
+      class="search-form"
+      header-row-class-name="table-header-gray"
+    >
       <el-row :gutter="20">
         <!-- 用户账号 -->
         <el-col :xs="24" :sm="12" :md="12" :lg="6">
@@ -57,7 +63,7 @@
       </el-row>
     </el-form>
     <!-- 操作 -->
-    <div class="flex mb-[10px]">
+    <div class="flex mb-[15px]">
       <el-button type="primary" :icon="Plus" @click="addUser" plain>新增</el-button>
       <el-button type="danger" :icon="Delete" @click="multipleDelete" plain>删除</el-button>
       <el-button type="warning" :icon="Upload" @click="importUser" plain>导入</el-button>
