@@ -56,8 +56,16 @@
         <!-- 操作按钮 -->
         <el-col :xs="24" :md="12" class="button-group">
           <el-form-item>
-            <el-button type="primary" :icon="Search" @click="pageSearch" :loading="btnIsLoading">搜索</el-button>
-            <el-button :icon="Refresh" @click="resetSearchForm">重置</el-button>
+            <el-button
+              v-perms="['system:user:query']"
+              type="primary"
+              :icon="Search"
+              @click="pageSearch"
+              :loading="btnIsLoading"
+            >
+              搜索
+            </el-button>
+            <el-button v-perms="['system:user:query']" :icon="Refresh" @click="resetSearchForm">重置</el-button>
           </el-form-item>
         </el-col>
       </el-row>
@@ -66,10 +74,16 @@
   <div class="page-container">
     <!-- 操作 -->
     <div class="flex mb-[15px]">
-      <el-button type="primary" :icon="Plus" @click="addUser" plain>新增</el-button>
-      <el-button type="danger" :icon="Delete" @click="multipleDelete" plain>删除</el-button>
-      <el-button type="warning" :icon="Upload" @click="importUser" plain>导入</el-button>
-      <el-button type="success" :icon="Download" @click="exportUser" plain>导出</el-button>
+      <el-button v-perms="['system:user:add']" type="primary" :icon="Plus" @click="addUser" plain>新增</el-button>
+      <el-button v-perms="['system:user:remove']" type="danger" :icon="Delete" @click="multipleDelete" plain>
+        删除
+      </el-button>
+      <el-button v-perms="['system:user:import']" type="warning" :icon="Upload" @click="importUser" plain>
+        导入
+      </el-button>
+      <el-button v-perms="['system:user:export']" type="success" :icon="Download" @click="exportUser" plain>
+        导出
+      </el-button>
     </div>
     <!-- 表格 -->
     <el-table
@@ -99,13 +113,19 @@
       <el-table-column label="操作" width="120" fixed="right">
         <template #default="{ row }">
           <el-tooltip content="修改" placement="top" v-if="row.userId !== 1">
-            <el-button link type="primary" :icon="Edit" @click="editUser(row)" />
+            <el-button v-perms="['system:user:edit']" link type="primary" :icon="Edit" @click="editUser(row)" />
           </el-tooltip>
           <el-tooltip content="删除" placement="top" v-if="row.userId !== 1">
-            <el-button link type="danger" :icon="Delete" @click="deleteUser(row)" />
+            <el-button v-perms="['system:user:remove']" link type="danger" :icon="Delete" @click="deleteUser(row)" />
           </el-tooltip>
           <el-tooltip content="重置密码" placement="top" v-if="row.userId !== 1">
-            <el-button link type="warning" :icon="Key" @click="updatePassword(row)" />
+            <el-button
+              v-perms="['system:user:resetpwd']"
+              link
+              type="warning"
+              :icon="Key"
+              @click="updatePassword(row)"
+            />
           </el-tooltip>
         </template>
       </el-table-column>

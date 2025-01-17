@@ -22,33 +22,6 @@ export function filterTree(data: RouteComponent[]) {
   return newTree;
 }
 
-/** 从localStorage里取出当前登录用户的角色roles，过滤无权限的菜单 */
-export function filterNoPermissionTree(data: RouteComponent[]) {
-  // const currentRoles = storageLocal().getItem<DataInfo<number>>(userKey)?.roles ?? [];
-  // @TODO 暂时将roles设置为Admin，权限的储存方式需讨论，字符串或数组，涉及一个用户可否拥有多个权限
-  const currentRoles = 'admin';
-  // 判断roles数组中是否包含有currentRoles
-  // @TODO 判断机制待讨论
-  const newTree = cloneDeep(data).filter((item: any) => {
-    if (item?.meta?.roles) {
-      return item?.meta?.roles.includes(currentRoles);
-    } else {
-      // 不带roles默认为不带权限的路由
-      return true;
-    }
-  });
-  // 递归
-  newTree.forEach((item: any) => item.children && (item.children = filterNoPermissionTree(item.children)));
-  return filterNoChildrenTree(newTree);
-}
-
-/** 过滤children长度为0的的目录，当目录下没有菜单时，会过滤此目录，目录没有赋予roles权限，当目录下只要有一个菜单有显示权限，那么此目录就会显示 */
-function filterNoChildrenTree(data: RouteComponent[]) {
-  const newTree = cloneDeep(data).filter((item: any) => item?.children?.length !== 0);
-  newTree.forEach((item: { children }) => item.children && (item.children = filterTree(item.children)));
-  return newTree;
-}
-
 /**
  * 将多级嵌套路由处理成一维数组
  * @param routesList 传入路由

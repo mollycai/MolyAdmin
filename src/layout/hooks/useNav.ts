@@ -6,6 +6,8 @@ import { emitter } from '@/utils/mitt';
 import { storeToRefs } from 'pinia';
 import { computed, ref } from 'vue';
 import { useGlobalConfig } from '@/config';
+import { localCache } from '@/utils/cache';
+import { userKey } from '@/utils/auth';
 
 // @TODO 封装所有与导航相关的hook
 export function useNav() {
@@ -15,7 +17,8 @@ export function useNav() {
   // 完整菜单
   const { wholeMenus } = storeToRefs(usePermissionStoreHook());
   // 用户名
-  const username = ref('admin');
+  const user = localCache.get<any>(userKey);
+  const username = ref(user ? user.username : '');
   // 用户头像
   const userAvatar = ref('https://avatars.githubusercontent.com/u/99068236?v=4');
   // 头像样式
