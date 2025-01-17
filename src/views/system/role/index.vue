@@ -13,8 +13,8 @@
       <!-- 状态 -->
       <el-form-item label="状态">
         <el-select v-model="searchForm.status" placeholder="请选择状态" class="!w-[200px]" clearable>
-          <el-option label="正常" value="0" />
-          <el-option label="停用" value="1" />
+          <el-option label="正常" :value="StatusEnum.NORMAL" />
+          <el-option label="停用" :value="StatusEnum.STOP" />
         </el-select>
       </el-form-item>
       <!-- 创建时间 -->
@@ -35,7 +35,7 @@
       <!-- 操作按钮 -->
       <el-form-item>
         <el-button
-          v-perms="['system:role:query']"
+          v-perms="[RolePermissions.QUERY]"
           type="primary"
           :icon="Search"
           @click="pageSearch"
@@ -43,18 +43,18 @@
         >
           搜索
         </el-button>
-        <el-button v-perms="['system:role:query']" :icon="Refresh" @click="resetSearchForm">重置</el-button>
+        <el-button v-perms="[RolePermissions.QUERY]" :icon="Refresh" @click="resetSearchForm">重置</el-button>
       </el-form-item>
     </el-form>
   </div>
   <div class="page-container">
     <!-- 操作 -->
     <div class="flex mb-[15px]">
-      <el-button v-perms="['system:role:add']" type="primary" :icon="Plus" @click="createRole" plain>新增</el-button>
-      <el-button v-perms="['system:role:remove']" type="danger" :icon="Delete" @click="multipleDelete" plain>
+      <el-button v-perms="[RolePermissions.ADD]" type="primary" :icon="Plus" @click="createRole" plain>新增</el-button>
+      <el-button v-perms="[RolePermissions.REMOVE]" type="danger" :icon="Delete" @click="multipleDelete" plain>
         删除
       </el-button>
-      <el-button v-perms="['system:role:export']" type="success" :icon="Download" @click="exportRole" plain>
+      <el-button v-perms="[RolePermissions.EXPORT]" type="success" :icon="Download" @click="exportRole" plain>
         导出
       </el-button>
     </div>
@@ -73,7 +73,13 @@
       <el-table-column prop="roleSort" label="排序" width="80" align="center" />
       <el-table-column prop="status" label="状态" width="100" align="center">
         <template #default="{ row }">
-          <el-switch v-model="row.status" size="small" active-value="0" inactive-value="1" @change="changeStatus" />
+          <el-switch
+            v-model="row.status"
+            size="small"
+            :active-value="StatusEnum.NORMAL"
+            :inactive-value="StatusEnum.STOP"
+            @change="changeStatus"
+          />
         </template>
       </el-table-column>
       <el-table-column prop="remark" label="备注" show-overflow-tooltip />
@@ -85,7 +91,7 @@
       <el-table-column label="操作" width="120" align="center" fixed="right">
         <template #default="{ row }">
           <el-tooltip content="修改" placement="top" v-if="row.roleId !== 1">
-            <el-button v-perms="['system:role:edit']" link type="primary" :icon="Edit" @click="editRole(row)" />
+            <el-button v-perms="[RolePermissions.EDIT]" link type="primary" :icon="Edit" @click="editRole(row)" />
           </el-tooltip>
           <el-tooltip content="删除" placement="top" v-if="row.roleId !== 1">
             <el-button v-perms="['system:role:delete']" link type="danger" :icon="Delete" @click="deleteRole(row)" />
@@ -124,6 +130,8 @@ import { cloneDeep } from 'lodash-es';
 import { onMounted, ref } from 'vue';
 import { default as RoleDialog, default as roleDialog } from './roleDialog.vue';
 import { DialogStatus } from './type';
+import { DialogTypeEnum, StatusEnum } from '@/enums/dataEnum';
+import { RolePermissions } from '@/enums/auth';
 
 // 加载
 let isLoading = ref<boolean>(false);
@@ -142,12 +150,12 @@ const handlePageChange = ({ page = 1, limit = pageParams.value.limit } = {}) => 
 // 角色列表
 const roleList = ref<Array<any>>([]);
 // 角色信息弹窗状态
-const roleDialogStatus = ref<DialogStatus>('Create');
+const roleDialogStatus = ref<DialogStatus>(DialogTypeEnum.CREATE);
 // 搜索表单数据模型
 const searchFormInit = {
   roleName: '',
   roleKey: '',
-  status: '0',
+  status: StatusEnum.NORMAL,
   beginTime: '',
   endTime: '',
 };
@@ -200,12 +208,12 @@ const clearDate = () => {
 };
 // 添加角色
 const createRole = () => {
-  roleDialogStatus.value = 'Create';
+  roleDialogStatus.value = DialogTypeEnum.CREATE;
   roleDialogRef.value.dialogVisible = true;
 };
 // 编辑角色
 const editRole = (role) => {
-  roleDialogStatus.value = 'Edit';
+  roleDialogStatus.value = DialogTypeEnum.EDIT;
   roleDialogRef.value.roleForm = cloneDeep(role);
   roleMenuTreeSelect(role.roleId)
     .then((data: Result) => {

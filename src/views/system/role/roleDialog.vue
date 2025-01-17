@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="dialogVisible"
-    :title="status === 'Edit' ? '修改角色' : '添加角色'"
+    :title="status === DialogTypeEnum.EDIT ? '修改角色' : '添加角色'"
     width="600px"
     @close="closeDialog"
     align-center
@@ -22,8 +22,8 @@
       <!-- 状态 -->
       <el-form-item label="状态" prop="status">
         <el-radio-group v-model="roleForm.status">
-          <el-radio :value="'0'">正常</el-radio>
-          <el-radio :value="'1'">停用</el-radio>
+          <el-radio :value="StatusEnum.NORMAL">正常</el-radio>
+          <el-radio :value="StatusEnum.STOP">停用</el-radio>
         </el-radio-group>
       </el-form-item>
       <!-- 菜单权限 -->
@@ -59,12 +59,14 @@
 
 <script lang="ts" setup>
 import { createRole, menuTreeSelect, updateRole } from '@/api/system';
+import { StatusEnum } from '@/enums/dataEnum';
 import { CodeEnum } from '@/enums/httpEnums';
 import feedback from '@/utils/feedback';
 import { FormInstance, FormRules } from 'element-plus';
 import { cloneDeep } from 'lodash-es';
 import { nextTick } from 'process';
 import { onMounted, reactive, ref } from 'vue';
+import { DialogTypeEnum } from '@/enums/dataEnum';
 
 // 获取参数
 const props = defineProps({
@@ -81,7 +83,7 @@ const roleFormInit: any = {
   roleName: '',
   roleKey: '',
   roleSort: 0,
-  status: '0',
+  status: StatusEnum.NORMAL,
   remark: '',
   menuCheckStrictly: true,
   deptCheckStrictly: true, // dept暂时不做
@@ -142,7 +144,7 @@ const submit = async (formEl: FormInstance | undefined) => {
   await formEl.validate((valid) => {
     if (!valid) return;
     roleForm.value['menuIds'] = menuRef.value.getCheckedKeys();
-    if (props.status === 'Edit') {
+    if (props.status === DialogTypeEnum.EDIT) {
       // 修改角色
       updateRole(roleForm.value).then(({ code, msg }) => {
         if (code === CodeEnum.SUCCESS) {
@@ -154,7 +156,7 @@ const submit = async (formEl: FormInstance | undefined) => {
         }
       });
     }
-    if (props.status === 'Create') {
+    if (props.status === DialogTypeEnum.CREATE) {
       // 添加角色
       createRole(roleForm.value).then(({ code, msg }) => {
         if (code === CodeEnum.SUCCESS) {

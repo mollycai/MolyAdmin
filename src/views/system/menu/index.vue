@@ -7,13 +7,13 @@
       </el-form-item>
       <el-form-item label="状态" prop="status">
         <el-select v-model="searchFormDto.status" placeholder="请选择状态" class="!w-[200px]" clearable>
-          <el-option label="启用" value="0"></el-option>
-          <el-option label="禁用" value="1"></el-option>
+          <el-option label="启用" :value="StatusEnum.NORMAL"></el-option>
+          <el-option label="禁用" :value="StatusEnum.STOP"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item>
         <el-button
-          v-perms="['system:menu:query']"
+          v-perms="[MenuPermissions.QUERY]"
           type="primary"
           :icon="Search"
           @click="pageSearch"
@@ -21,13 +21,13 @@
         >
           搜索
         </el-button>
-        <el-button v-perms="['system:menu:query']" :icon="Refresh" @click="resetSearchForm"> 重置 </el-button>
+        <el-button v-perms="[MenuPermissions.QUERY]" :icon="Refresh" @click="resetSearchForm"> 重置 </el-button>
       </el-form-item>
     </el-form>
   </div>
   <div class="page-container">
     <div class="flex mb-[15px]">
-      <el-button v-perms="['system:menu:add']" type="primary" :icon="Plus" @click="createMenuFromRoot" plain>
+      <el-button v-perms="[MenuPermissions.ADD]" type="primary" :icon="Plus" @click="createMenuFromRoot" plain>
         新增
       </el-button>
       <el-button type="warning" :icon="Sort" @click="toggleExpandAll" plain>展开/折叠</el-button>
@@ -46,9 +46,9 @@
       <el-table-column prop="rank" label="排序" width="60" />
       <el-table-column prop="type" label="菜单类型" width="120">
         <template #default="{ row }">
-          <el-tag v-if="row.type === 'M'" type="primary">目录</el-tag>
-          <el-tag v-if="row.type === 'C'" type="warning">菜单</el-tag>
-          <el-tag v-if="row.type === 'F'" type="info">按钮</el-tag>
+          <el-tag v-if="row.type === MenuEnum.TYPE_DIR" type="primary">目录</el-tag>
+          <el-tag v-if="row.type === MenuEnum.TYPE_MENU" type="warning">菜单</el-tag>
+          <el-tag v-if="row.type === MenuEnum.TYPE_BUTTON" type="info">按钮</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="图标" width="100">
@@ -60,8 +60,8 @@
       <el-table-column prop="permission" label="权限标识" show-overflow-tooltip />
       <el-table-column label="状态" width="120" align="center">
         <template #default="{ row }">
-          <el-tag v-if="row.status === 0" type="success">正常</el-tag>
-          <el-tag v-if="row.status === 1" type="danger">停用</el-tag>
+          <el-tag v-if="row.status === StatusEnum.NORMAL" type="success">正常</el-tag>
+          <el-tag v-if="row.status === StatusEnum.STOP" type="danger">停用</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="创建时间" width="200">
@@ -72,7 +72,7 @@
       <el-table-column label="操作" width="200" fixed="right">
         <template #default="{ row }">
           <el-button
-            v-perms="['system:menu:edit']"
+            v-perms="[MenuPermissions.EDIT]"
             link
             size="small"
             type="primary"
@@ -81,11 +81,18 @@
           >
             编辑
           </el-button>
-          <el-button v-perms="['system:menu:add']" link size="small" type="info" :icon="Plus" @click="createMenu(row)">
+          <el-button
+            v-perms="[MenuPermissions.ADD]"
+            link
+            size="small"
+            type="info"
+            :icon="Plus"
+            @click="createMenu(row)"
+          >
             新增
           </el-button>
           <el-button
-            v-perms="['system:menu:remove']"
+            v-perms="[MenuPermissions.REMOVE]"
             link
             size="small"
             type="danger"
@@ -112,10 +119,12 @@ import menuDialog from './menuDialog.vue';
 import feedback from '@/utils/feedback';
 import { Result } from '@/api/type';
 import { removeMenu } from '@/api/system';
+import { CharEnum, DialogTypeEnum, MenuEnum, StatusEnum } from '@/enums/dataEnum';
+import { MenuPermissions } from '@/enums/auth';
 
 const isLoading = ref<boolean>(false);
 const btnIsLoading = ref<boolean>(false);
-const menuDialogStatus = ref<DialogStatus>('Create');
+const menuDialogStatus = ref<DialogStatus>(DialogTypeEnum.CREATE);
 const menuDialogRef = ref<InstanceType<typeof menuDialog>>(null);
 
 const isExpandAll = ref(false);
@@ -149,19 +158,22 @@ const fetchData = () => {
 };
 // 编辑菜单
 const editMenu = (menu) => {
-  menuDialogStatus.value = 'Edit';
   const _menu = formatMenu(menu);
   menuDialogRef.value.menuForm = cloneDeep(_menu);
+  menuDialogStatus.value = DialogTypeEnum.EDIT;
+  menuDialogRef.value.getTreeSelect();
   menuDialogRef.value.dialogVisible = true;
 };
 // 创建菜单
 const createMenuFromRoot = () => {
-  menuDialogStatus.value = 'Create';
+  menuDialogStatus.value = DialogTypeEnum.CREATE;
+  menuDialogRef.value.getTreeSelect();
   menuDialogRef.value.dialogVisible = true;
 };
 const createMenu = (menu) => {
-  menuDialogStatus.value = 'Create';
+  menuDialogStatus.value = DialogTypeEnum.CREATE;
   menuDialogRef.value.menuForm.parentId = menu.id;
+  menuDialogRef.value.getTreeSelect();
   menuDialogRef.value.dialogVisible = true;
 };
 // 删除菜单
@@ -194,13 +206,13 @@ const formatMenu = (originalMenuData) => {
     icon: originalMenuData.icon || '', // 菜单图标
     menuName: originalMenuData.title || '', // 菜单名称
     orderNum: originalMenuData.rank || 1, // 显示排序
-    isFrame: originalMenuData.isFrame ? 0 : 1, // 是否外链
-    isCache: originalMenuData.isCache ? 0 : 1, // 是否缓存
+    isFrame: originalMenuData.isFrame ? CharEnum.YES : CharEnum.NO, // 是否外链
+    isCache: originalMenuData.isCache ? CharEnum.YES : CharEnum.NO, // 是否缓存
     path: originalMenuData.path || '', // 路由地址
     query: originalMenuData.query, // 路由参数
     component: originalMenuData.component || '', // 组件名称
-    visible: originalMenuData.isShow ? 0 : 1, // 显示状态
-    status: originalMenuData.status || 0, // 菜单状态
+    visible: originalMenuData.isShow ? CharEnum.YES : CharEnum.NO, // 显示状态
+    status: originalMenuData.status || StatusEnum.NORMAL, // 菜单状态
     perms: originalMenuData.permission || '', // 权限标识
     remark: originalMenuData.remark, // 备注
   };

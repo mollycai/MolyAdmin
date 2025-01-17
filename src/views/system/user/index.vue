@@ -25,8 +25,8 @@
         <el-col :xs="24" :sm="12" :md="12" :lg="6">
           <el-form-item label="状态" prop="status">
             <el-select v-model="searchFormDto.status" placeholder="请选择状态" clearable>
-              <el-option label="启用" value="0"></el-option>
-              <el-option label="禁用" value="1"></el-option>
+              <el-option label="启用" :value="StatusEnum.NORMAL"></el-option>
+              <el-option label="禁用" :value="StatusEnum.STOP"></el-option>
             </el-select>
           </el-form-item>
         </el-col>
@@ -57,7 +57,7 @@
         <el-col :xs="24" :md="12" class="button-group">
           <el-form-item>
             <el-button
-              v-perms="['system:user:query']"
+              v-perms="[UserPermissions.QUERY]"
               type="primary"
               :icon="Search"
               @click="pageSearch"
@@ -65,7 +65,7 @@
             >
               搜索
             </el-button>
-            <el-button v-perms="['system:user:query']" :icon="Refresh" @click="resetSearchForm">重置</el-button>
+            <el-button v-perms="[UserPermissions.QUERY]" :icon="Refresh" @click="resetSearchForm">重置</el-button>
           </el-form-item>
         </el-col>
       </el-row>
@@ -74,14 +74,14 @@
   <div class="page-container">
     <!-- 操作 -->
     <div class="flex mb-[15px]">
-      <el-button v-perms="['system:user:add']" type="primary" :icon="Plus" @click="addUser" plain>新增</el-button>
-      <el-button v-perms="['system:user:remove']" type="danger" :icon="Delete" @click="multipleDelete" plain>
+      <el-button v-perms="[UserPermissions.ADD]" type="primary" :icon="Plus" @click="addUser" plain>新增</el-button>
+      <el-button v-perms="[UserPermissions.REMOVE]" type="danger" :icon="Delete" @click="multipleDelete" plain>
         删除
       </el-button>
-      <el-button v-perms="['system:user:import']" type="warning" :icon="Upload" @click="importUser" plain>
+      <el-button v-perms="[UserPermissions.IMPORT]" type="warning" :icon="Upload" @click="importUser" plain>
         导入
       </el-button>
-      <el-button v-perms="['system:user:export']" type="success" :icon="Download" @click="exportUser" plain>
+      <el-button v-perms="[UserPermissions.EXPORT]" type="success" :icon="Download" @click="exportUser" plain>
         导出
       </el-button>
     </div>
@@ -113,14 +113,14 @@
       <el-table-column label="操作" width="120" fixed="right">
         <template #default="{ row }">
           <el-tooltip content="修改" placement="top" v-if="row.userId !== 1">
-            <el-button v-perms="['system:user:edit']" link type="primary" :icon="Edit" @click="editUser(row)" />
+            <el-button v-perms="[UserPermissions.EDIT]" link type="primary" :icon="Edit" @click="editUser(row)" />
           </el-tooltip>
           <el-tooltip content="删除" placement="top" v-if="row.userId !== 1">
-            <el-button v-perms="['system:user:remove']" link type="danger" :icon="Delete" @click="deleteUser(row)" />
+            <el-button v-perms="[UserPermissions.REMOVE]" link type="danger" :icon="Delete" @click="deleteUser(row)" />
           </el-tooltip>
           <el-tooltip content="重置密码" placement="top" v-if="row.userId !== 1">
             <el-button
-              v-perms="['system:user:resetpwd']"
+              v-perms="[UserPermissions.RESETPWD]"
               link
               type="warning"
               :icon="Key"
@@ -162,6 +162,8 @@ import { cloneDeep } from 'lodash-es';
 import { onMounted, ref } from 'vue';
 import { DialogStatus } from './types';
 import userDialog from './userDialog.vue';
+import { DialogTypeEnum, StatusEnum } from '@/enums/dataEnum';
+import { UserPermissions } from '@/enums/auth';
 
 // 加载
 let isLoading = ref<boolean>(false);
@@ -180,7 +182,7 @@ const handlePageChange = ({ page = 1, limit = pageParams.value.limit } = {}) => 
 // 用户列表
 const userList = ref<Array<any>>([]);
 // 用户信息弹窗状态
-const userDialogStatus = ref<DialogStatus>('Create');
+const userDialogStatus = ref<DialogStatus>(DialogTypeEnum.CREATE);
 // 搜索表单数据模型
 const searchFormInit = {
   userName: '',
@@ -204,7 +206,7 @@ const fetchData = async (page: number, limit: number) => {
   isLoading.value = true;
   //获取开始和结束时间
   if (createTimes.value.length == 2) {
-    searchFormDto.value.beginTime = createTimes.value[0];
+    searchFormDto.value.beginTime = createTimes.value[StatusEnum.NORMAL];
     searchFormDto.value.endTime = createTimes.value[1];
   }
   getAllUsers({ ...searchFormDto.value, pageNum: page, pageSize: limit })
@@ -244,7 +246,7 @@ const handleStatusChange = (user) => {
 };
 // 添加用户
 const addUser = () => {
-  userDialogStatus.value = 'Create';
+  userDialogStatus.value = DialogTypeEnum.CREATE;
   userDialogRef.value.dialogVisible = true;
 };
 // @TODO 导出用户
@@ -253,7 +255,7 @@ const exportUser = () => {};
 const importUser = () => {};
 // 修改用户
 const editUser = async ({ userId, ...rest }) => {
-  userDialogStatus.value = 'Edit';
+  userDialogStatus.value = DialogTypeEnum.EDIT;
   // 需要再请求roleIds列表
   const { data: roleIds } = await getRolesByUserId(userId);
   userDialogRef.value.userForm = {

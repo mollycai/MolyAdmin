@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="dialogVisible"
-    :title="status === 'Edit' ? '编辑用户' : '新增用户'"
+    :title="status === DialogTypeEnum.EDIT ? '编辑用户' : '新增用户'"
     width="600px"
     @close="closeDialog"
     align-center
@@ -16,7 +16,7 @@
         <el-input v-model="userForm.nickName" placeholder="请输入用户昵称" />
       </el-form-item>
       <!-- 手机号码 -->
-      <el-form-item label="密码" prop="password" v-if="status !== 'Edit'" required>
+      <el-form-item label="密码" prop="password" v-if="status !== DialogTypeEnum.EDIT" required>
         <el-input v-model="userForm.password" placeholder="请输入密码" type="password" />
       </el-form-item>
       <!-- 手机号码 -->
@@ -38,23 +38,23 @@
             :key="item.roleId"
             :label="item.roleName"
             :value="item.roleId"
-            :disabled="item.status === '1'"
+            :disabled="item.status === StatusEnum.STOP"
           ></el-option>
         </el-select>
       </el-form-item>
       <!-- 性别 -->
       <el-form-item label="性别" prop="sex">
         <el-radio-group v-model="userForm.sex">
-          <el-radio :value="'0'">男</el-radio>
-          <el-radio :value="'1'">女</el-radio>
-          <el-radio :value="'2'">未知</el-radio>
+          <el-radio :value="SexEnum.MAN">男</el-radio>
+          <el-radio :value="SexEnum.WOMAN">女</el-radio>
+          <el-radio :value="SexEnum.SECRET">未知</el-radio>
         </el-radio-group>
       </el-form-item>
       <!-- 状态 -->
       <el-form-item label="状态" prop="status">
         <el-radio-group v-model="userForm.status">
-          <el-radio :value="'0'">正常</el-radio>
-          <el-radio :value="'1'">停用</el-radio>
+          <el-radio :value="StatusEnum.NORMAL">正常</el-radio>
+          <el-radio :value="StatusEnum.STOP">停用</el-radio>
         </el-radio-group>
       </el-form-item>
       <!-- 备注 -->
@@ -78,6 +78,7 @@ import type { FormInstance, FormRules } from 'element-plus';
 import { cloneDeep } from 'lodash-es';
 import { onMounted, reactive, ref } from 'vue';
 import type { RoleOptions } from './types';
+import { DialogTypeEnum, SexEnum, StatusEnum } from '@/enums/dataEnum';
 
 // 获取参数
 const props = defineProps({
@@ -98,8 +99,8 @@ const userFormInit: any = {
   password: '',
   avatar: '', // @TODO 待改成上传头像
   email: '',
-  sex: '0',
-  status: '0',
+  sex: SexEnum.MAN,
+  status: StatusEnum.NORMAL,
   remark: '',
 };
 const userForm = ref(cloneDeep(userFormInit));
@@ -125,7 +126,7 @@ const formRules = reactive<FormRules>({
     { min: 5, max: 18, message: '长度应该在5-18个字符', trigger: 'blur' },
   ],
   password:
-    props.status === 'Edit'
+    props.status === DialogTypeEnum.EDIT
       ? []
       : [
           { required: true, message: '密码不能为空', trigger: 'blur' },
@@ -147,7 +148,7 @@ const submit = async (formEl: FormInstance | undefined) => {
   if (!formEl) return;
   await formEl.validate((valid) => {
     if (valid) {
-      if (props.status === 'Create') {
+      if (props.status === DialogTypeEnum.CREATE) {
         createUser(userForm.value).then(({ code, msg }) => {
           if (code === CodeEnum.SUCCESS) {
             feedback.msgSuccess(`${msg}`);
@@ -158,7 +159,7 @@ const submit = async (formEl: FormInstance | undefined) => {
           }
         });
       }
-      if (props.status === 'Edit') {
+      if (props.status === DialogTypeEnum.EDIT) {
         updateUser(userForm.value).then(({ code, msg }) => {
           if (code === CodeEnum.SUCCESS) {
             feedback.msgSuccess(`${msg}`);

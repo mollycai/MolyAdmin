@@ -1,1 +1,3 @@
-export type DialogStatus = 'Edit' | 'Create';
+import { DialogTypeEnum } from "@/enums/dataEnum";
+
+export type DialogStatus = DialogTypeEnum.EDIT | DialogTypeEnum.CREATE;
