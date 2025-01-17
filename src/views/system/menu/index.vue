@@ -1,5 +1,5 @@
 <template>
-  <div class="page-conatiner">
+  <div class="page-container">
     <!-- 搜索表单 -->
     <el-form ref="searchFormRef" :model="searchFormDto" inline>
       <el-form-item label="菜单名称" prop="roleName">
@@ -12,12 +12,24 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" :icon="Search" @click="pageSearch" :loading="btnIsLoading">搜索</el-button>
-        <el-button :icon="Refresh" @click="resetSearchForm">重置</el-button>
+        <el-button
+          v-perms="['system:menu:query']"
+          type="primary"
+          :icon="Search"
+          @click="pageSearch"
+          :loading="btnIsLoading"
+        >
+          搜索
+        </el-button>
+        <el-button v-perms="['system:menu:query']" :icon="Refresh" @click="resetSearchForm"> 重置 </el-button>
       </el-form-item>
     </el-form>
+  </div>
+  <div class="page-container">
     <div class="flex mb-[15px]">
-      <el-button type="primary" :icon="Plus" @click="createMenuFromRoot" plain>新增</el-button>
+      <el-button v-perms="['system:menu:add']" type="primary" :icon="Plus" @click="createMenuFromRoot" plain>
+        新增
+      </el-button>
       <el-button type="warning" :icon="Sort" @click="toggleExpandAll" plain>展开/折叠</el-button>
     </div>
     <!-- 菜单表格 -->
@@ -59,9 +71,29 @@
       </el-table-column>
       <el-table-column label="操作" width="200" fixed="right">
         <template #default="{ row }">
-          <el-button link size="small" type="primary" :icon="Edit" @click="editMenu(row)">编辑</el-button>
-          <el-button link size="small" type="info" :icon="Plus" @click="createMenu(row)">新增</el-button>
-          <el-button link size="small" type="danger" :icon="Delete" @click="deleteMenu(row)">删除</el-button>
+          <el-button
+            v-perms="['system:menu:edit']"
+            link
+            size="small"
+            type="primary"
+            :icon="Edit"
+            @click="editMenu(row)"
+          >
+            编辑
+          </el-button>
+          <el-button v-perms="['system:menu:add']" link size="small" type="info" :icon="Plus" @click="createMenu(row)">
+            新增
+          </el-button>
+          <el-button
+            v-perms="['system:menu:remove']"
+            link
+            size="small"
+            type="danger"
+            :icon="Delete"
+            @click="deleteMenu(row)"
+          >
+            删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>

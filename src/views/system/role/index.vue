@@ -1,5 +1,5 @@
 <template>
-  <div class="page-conatiner">
+  <div class="page-container">
     <!-- 搜索表单 -->
     <el-form :model="searchForm" inline>
       <!-- 角色名称 -->
@@ -34,15 +34,29 @@
       </el-form-item>
       <!-- 操作按钮 -->
       <el-form-item>
-        <el-button type="primary" :icon="Search" @click="pageSearch" :loading="btnIsLoading">搜索</el-button>
-        <el-button :icon="Refresh" @click="resetSearchForm">重置</el-button>
+        <el-button
+          v-perms="['system:role:query']"
+          type="primary"
+          :icon="Search"
+          @click="pageSearch"
+          :loading="btnIsLoading"
+        >
+          搜索
+        </el-button>
+        <el-button v-perms="['system:role:query']" :icon="Refresh" @click="resetSearchForm">重置</el-button>
       </el-form-item>
     </el-form>
+  </div>
+  <div class="page-container">
     <!-- 操作 -->
     <div class="flex mb-[15px]">
-      <el-button type="primary" :icon="Plus" @click="createRole" plain>新增</el-button>
-      <el-button type="danger" :icon="Delete" @click="multipleDelete" plain>删除</el-button>
-      <el-button type="success" :icon="Download" @click="exportRole" plain>导出</el-button>
+      <el-button v-perms="['system:role:add']" type="primary" :icon="Plus" @click="createRole" plain>新增</el-button>
+      <el-button v-perms="['system:role:remove']" type="danger" :icon="Delete" @click="multipleDelete" plain>
+        删除
+      </el-button>
+      <el-button v-perms="['system:role:export']" type="success" :icon="Download" @click="exportRole" plain>
+        导出
+      </el-button>
     </div>
     <!-- 角色表格 -->
     <el-table
@@ -71,10 +85,10 @@
       <el-table-column label="操作" width="120" align="center" fixed="right">
         <template #default="{ row }">
           <el-tooltip content="修改" placement="top" v-if="row.roleId !== 1">
-            <el-button link type="primary" :icon="Edit" @click="editRole(row)" />
+            <el-button v-perms="['system:role:edit']" link type="primary" :icon="Edit" @click="editRole(row)" />
           </el-tooltip>
           <el-tooltip content="删除" placement="top" v-if="row.roleId !== 1">
-            <el-button link type="danger" :icon="Delete" @click="deleteRole(row)" />
+            <el-button v-perms="['system:role:delete']" link type="danger" :icon="Delete" @click="deleteRole(row)" />
           </el-tooltip>
           <el-tooltip content="授权用户" placement="top" v-if="row.roleId !== 1">
             <el-button link type="success" :icon="User" @click="authUser(row)" />
@@ -96,8 +110,8 @@
         :total="total"
       />
     </div>
-    <RoleDialog ref="roleDialogRef" :status="roleDialogStatus" @refresh="handlePageChange(pageParams)"></RoleDialog>
   </div>
+  <RoleDialog ref="roleDialogRef" :status="roleDialogStatus" @refresh="handlePageChange(pageParams)"></RoleDialog>
 </template>
 <script lang="ts" setup>
 import { getAllRoles, removeRole, roleMenuTreeSelect } from '@/api/system';

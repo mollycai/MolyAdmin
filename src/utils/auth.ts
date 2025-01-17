@@ -71,7 +71,7 @@ export function setToken(data: DataInfo<Date>) {
     localCache.set(userKey, {
       userId,
       refreshToken,
-      expires,
+      expires: new Date(expires).toISOString(),
       avatar,
       username,
       nickname,
@@ -108,4 +108,28 @@ export function formatToken(token: string): string {
   }
 }
 
-export function hasPermissions() {}
+/**
+ * 检查是否有该权限（根据后端返回的permissions字段进行判断）
+ * 但这不能完全由前端决定，可以在localstorage中篡改，后端的守卫中仍然需要设卡
+ * */
+export function hasPermissions(value: Array<string>): boolean {
+  if (!value) return false;
+  const allPerms = '*:*:*';
+  const { permissions } = useUserStoreHook();
+  if (!permissions) return false;
+  const isAuths = permissions.some((permission) => {
+    return permission === allPerms || value.includes(permission);
+  });
+  return isAuths ? true : false;
+}
+
+export function hasRole(value: Array<string>) {
+  if (!value) return false;
+  const superAdmin = 'superadmin';
+  const { roles } = useUserStoreHook();
+  if (!roles) return false;
+  const isAuths = roles.some((role) => {
+    return role === superAdmin || value.includes;
+  });
+  return isAuths ? true : false;
+}

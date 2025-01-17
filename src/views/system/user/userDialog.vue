@@ -4,6 +4,7 @@
     :title="status === 'Edit' ? '编辑用户' : '新增用户'"
     width="600px"
     @close="closeDialog"
+    align-center
   >
     <el-form ref="userFormRef" :model="userForm" :rules="formRules" label-width="100px">
       <!-- 用户账号 -->

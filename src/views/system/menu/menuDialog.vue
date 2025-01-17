@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :title="dialogTitle" v-model="dialogVisible" width="600px" @close="closeDialog">
+  <el-dialog :title="dialogTitle" v-model="dialogVisible" width="600px" @close="closeDialog" align-center>
     <el-form ref="menuFormRef" :model="menuForm" :rules="formRules" label-width="120px">
       <!-- 上级菜单 -->
       <el-form-item label="上级菜单" prop="parentId">

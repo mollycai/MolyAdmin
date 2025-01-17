@@ -7,6 +7,7 @@ import { useElementPlus } from './plugins/element-plus';
 import { getPlatformConfig, useGlobalConfig } from '@/config';
 import { MotionPlugin } from '@vueuse/motion';
 import { nameSpace } from '@/config/constants';
+import directive from './directives';
 
 // 引入重置样式
 import './style/reset.scss';
@@ -23,6 +24,8 @@ const app = createApp(App);
 import { IconifyIconOffline, IconifyIconOnline } from '@/components/ReIcon';
 app.component('IconifyIconOffline', IconifyIconOffline);
 app.component('IconifyIconOnline', IconifyIconOnline);
+
+app.use(directive);
 
 // 获取配置
 getPlatformConfig().then(async (config) => {
