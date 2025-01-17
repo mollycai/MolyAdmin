@@ -8,7 +8,6 @@ const siphonI18n = (function () {
   // 仅初始化一次国际化配置
   let cache = Object.fromEntries(
     Object.entries(import.meta.glob('../locales/*.json', { eager: true })).map(([key, value]: any) => {
-      console.log(key, value);
       const matched = key.match(/([A-Za-z0-9-_]+)\./i)[1];
       return [matched, value.default];
     }),
